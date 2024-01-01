@@ -1,16 +1,16 @@
 {
   "files": {
     "main.css": "/employee-shift-planner/static/css/main.5bbbc153.css",
-    "main.js": "/employee-shift-planner/static/js/main.1d2c790f.js",
+    "main.js": "/employee-shift-planner/static/js/main.94c712d7.js",
     "static/js/787.7f842bcf.chunk.js": "/employee-shift-planner/static/js/787.7f842bcf.chunk.js",
     "static/media/logo.svg": "/employee-shift-planner/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg",
     "index.html": "/employee-shift-planner/index.html",
     "main.5bbbc153.css.map": "/employee-shift-planner/static/css/main.5bbbc153.css.map",
-    "main.1d2c790f.js.map": "/employee-shift-planner/static/js/main.1d2c790f.js.map",
+    "main.94c712d7.js.map": "/employee-shift-planner/static/js/main.94c712d7.js.map",
     "787.7f842bcf.chunk.js.map": "/employee-shift-planner/static/js/787.7f842bcf.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.5bbbc153.css",
-    "static/js/main.1d2c790f.js"
+    "static/js/main.94c712d7.js"
   ]
 }
