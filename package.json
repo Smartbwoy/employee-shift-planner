@@ -1,6 +1,7 @@
 {
   "name": "employee-shift-planner",
   "version": "0.1.0",
+  "homepage": "https://smartbwoy.github.io/employee-shift-planner",
   "private": true,
   "dependencies": {
     "@mobiscroll/react": "npm:@mobiscroll/react-trial@^5.28.1",
