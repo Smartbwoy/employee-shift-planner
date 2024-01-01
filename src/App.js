@@ -3,6 +3,8 @@ import './App.css';
 import React from 'react';
 import '@mobiscroll/react/dist/css/mobiscroll.min.css';
 import { Eventcalendar, Datepicker, snackbar, setOptions, Popup, Button, Input, Textarea, formatDate } from '@mobiscroll/react';
+import NavigationBar from './components/navigation/NavigationBar';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 setOptions({
     theme: 'windows',
@@ -394,6 +396,7 @@ function App() {
     }, []);
     
     return <div>
+        <NavigationBar/>
         <Eventcalendar
             view={viewSettings}
             data={shifts}
