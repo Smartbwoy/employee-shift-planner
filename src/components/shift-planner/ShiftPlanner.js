@@ -392,6 +392,7 @@ function ShiftPlanner() {
     }, []);
     
     return <div>
+        test
         <Eventcalendar
             view={viewSettings}
             data={shifts}

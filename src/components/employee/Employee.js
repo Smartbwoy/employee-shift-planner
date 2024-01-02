@@ -1,5 +1,5 @@
 import React from 'react';
 function Employee(){
-    return <div>Employees Management</div>
+    return <div>Employees Managements</div>
 }
 export default Employee
