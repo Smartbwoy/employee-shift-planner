@@ -16,8 +16,7 @@ function App() {
         <>
         <NavigationBar/>
         <Routes>
-            <Route path="/" element={<HomePage/>}/>
-            <Route path="/employee-shift-planner" element={<HomePage/>}/>
+            <Route exact path="/employee-shift-planner" element={<HomePage/>}/>
             <Route path='/shiftplanner' element={<ShiftPlanner/>}/>
             <Route path='/employee' element={<Employee/>}/>
         </Routes>
