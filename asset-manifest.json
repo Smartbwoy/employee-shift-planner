@@ -1,16 +1,16 @@
 {
   "files": {
-    "main.css": "/static/css/main.5bbbc153.css",
-    "main.js": "/static/js/main.614161b5.js",
-    "static/js/787.7f842bcf.chunk.js": "/static/js/787.7f842bcf.chunk.js",
-    "static/media/logo.svg": "/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg",
-    "index.html": "/index.html",
-    "main.5bbbc153.css.map": "/static/css/main.5bbbc153.css.map",
-    "main.614161b5.js.map": "/static/js/main.614161b5.js.map",
-    "787.7f842bcf.chunk.js.map": "/static/js/787.7f842bcf.chunk.js.map"
+    "main.css": "/employee-shift-planner/static/css/main.5bbbc153.css",
+    "main.js": "/employee-shift-planner/static/js/main.a786aed5.js",
+    "static/js/787.7f842bcf.chunk.js": "/employee-shift-planner/static/js/787.7f842bcf.chunk.js",
+    "static/media/logo.svg": "/employee-shift-planner/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg",
+    "index.html": "/employee-shift-planner/index.html",
+    "main.5bbbc153.css.map": "/employee-shift-planner/static/css/main.5bbbc153.css.map",
+    "main.a786aed5.js.map": "/employee-shift-planner/static/js/main.a786aed5.js.map",
+    "787.7f842bcf.chunk.js.map": "/employee-shift-planner/static/js/787.7f842bcf.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.5bbbc153.css",
-    "static/js/main.614161b5.js"
+    "static/js/main.a786aed5.js"
   ]
 }
