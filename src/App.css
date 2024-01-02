@@ -1,0 +1,87 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.employee-shifts-day {
+  font-size: 14px;
+  font-weight: 600;
+  opacity: .6;
+}
+
+.employee-shifts-popup .mbsc-popup .mbsc-popup-header {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.employee-shifts-cont {
+  position: relative;
+  padding-left: 42px;
+  max-height: 40px;
+}
+
+.employee-shifts-avatar {
+  position: absolute;
+  max-height: 40px;
+  max-width: 40px;
+  top: 18px;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  left: 20px;
+}
+
+.employee-shifts-name {
+  font-size: 15px;
+}
+
+.employee-shifts-title {
+  font-size: 12px;
+}
+
+.md-employee-shifts .mbsc-timeline-resource,
+.md-employee-shifts .mbsc-timeline-resource-col {
+  width: 200px;
+  align-items: center;
+  display: flex;
+}
+
+.md-employee-shifts .mbsc-schedule-event {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+}
