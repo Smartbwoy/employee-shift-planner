@@ -4,16 +4,17 @@
   "homepage": "https://smartbwoy.github.io/employee-shift-planner",
   "private": true,
   "dependencies": {
-    "@mobiscroll/react": "npm:@mobiscroll/react-trial@^5.28.1",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "axios": "^1.7.9",
     "bootstrap": "^5.3.2",
     "react": "^18.2.0",
     "react-bootstrap": "^2.9.2",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.21.1",
     "react-scripts": "^5.0.1",
+    "react-table": "^7.8.0",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
@@ -25,11 +26,41 @@
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
+  "extends": "react-app",
+  "overrides": [
+    {
+      "files": ["**/*.ts", "**/*.tsx"],
+      "parser": "@typescript-eslint/parser",
+      "parserOptions": {
+        "ecmaVersion": 2018,
+        "sourceType": "module",
+        "ecmaFeatures": {
+          "jsx": true
+        },
+        "warnOnUnsupportedTypeScriptVersion": true
+      },
+      "plugins": ["@typescript-eslint"],
+      "rules": {
+        "default-case": "off",
+        "no-dupe-class-members": "off",
+        "@typescript-eslint/no-angle-bracket-type-assertion": "warn",
+        "no-array-constructor": "off",
+        "@typescript-eslint/no-array-constructor": "warn",
+        "@typescript-eslint/no-namespace": "error",
+        "no-unused-vars": "off",
+        "@typescript-eslint/no-unused-vars": [
+          "warn",
+          {
+            "args": "none",
+            "ignoreRestSiblings": true
+          }
+        ],
+        "no-useless-constructor": "off",
+        "@typescript-eslint/no-useless-constructor": "warn"
+      }
+    }
+  ]
+},
   "browserslist": {
     "production": [
       ">0.2%",
@@ -43,6 +74,7 @@
     ]
   },
   "devDependencies": {
+    "@wixc3/react-board": "^2.3.0",
     "gh-pages": "^6.1.1"
   }
 }

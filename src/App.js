@@ -1,4 +1,4 @@
-import logo from './logo.svg';
+// import logo from './logo.svg';
 import './App.css';
 import React from 'react';
 import NavigationBar from './components/navigation/NavigationBar';
@@ -16,6 +16,7 @@ function App() {
         <>
         <NavigationBar/>
         <Routes>
+            <Route exact path="/" element={<HomePage/>}/>
             <Route exact path="/employee-shift-planner" element={<HomePage/>}/>
             <Route path='/shiftplanner' element={<ShiftPlanner/>}/>
             <Route path='/employee' element={<Employee/>}/>

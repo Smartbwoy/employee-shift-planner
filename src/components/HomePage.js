@@ -3,7 +3,7 @@ import ShiftPlanner from './shift-planner/ShiftPlanner';
 
 function HomePage(){
     return <div>
-        <ShiftPlanner/>
+        {/* <ShiftPlanner/> */}
         <h1>HomePage</h1>
         </div>
 }
