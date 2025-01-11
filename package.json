@@ -4,6 +4,7 @@
   "homepage": "https://smartbwoy.github.io/employee-shift-planner",
   "private": true,
   "dependencies": {
+    "@tanstack/react-query": "^5.62.8",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -13,6 +14,7 @@
     "react": "^18.2.0",
     "react-big-calendar": "^1.17.0",
     "react-bootstrap": "^2.9.2",
+    "react-color": "^2.19.3",
     "react-datepicker": "^7.5.0",
     "react-dom": "^18.2.0",
     "react-modal": "^3.16.3",

@@ -83,6 +83,7 @@ function Employee() {
     const middleName = form.middleName.value;
     const lastName = form.lastName.value;
     const position = form.position.value;
+    let status=true;
     const email = form.email.value;
 
     if (isEditing && selectedEmployee) {

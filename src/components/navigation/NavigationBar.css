@@ -1,0 +1,33 @@
+/* NavigationBar.css */
+
+.navbar-custom {
+    background-color: #1373d3; /* Dark background */
+    padding: 1rem 2rem;
+    border-bottom: 3px solid #ffc107; /* Accent color */
+  }
+  
+  .brand-custom {
+    color: #ffc107; /* Accent color */
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+  
+  .nav-link-custom {
+    color: #ffffff; /* White text */
+    font-size: 1.1rem;
+    margin-left: 1rem;
+    transition: color 0.3s ease;
+  }
+  
+  .nav-link-custom:hover {
+    color: #ffc107; /* Accent color on hover */
+  }
+  
+  .navbar-toggler {
+    border-color: #ffc107; /* Accent color for toggler */
+  }
+  
+  .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba%28%255, 193, 7, 1%29' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+  }
+  
