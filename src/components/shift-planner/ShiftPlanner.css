@@ -1,0 +1,147 @@
+/* Main container */
+.shift-planner-container {
+    padding: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  
+  /* Loading container */
+  .loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 70vh;
+  }
+  
+  /* Calendar styling */
+  .calendar-container {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+  }
+  
+  .rbc-calendar {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  .rbc-header {
+    padding: 12px 3px;
+    font-weight: 600;
+    background-color: #f8f9fa;
+  }
+  
+  .rbc-toolbar {
+    margin-bottom: 20px;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .rbc-toolbar-label {
+    font-size: 1.2rem;
+    font-weight: 600;
+  }
+  
+  .rbc-btn-group button {
+    margin: 0 2px;
+  }
+  
+  .rbc-event {
+    padding: 5px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .rbc-today {
+    background-color: #f8f9fa;
+  }
+  
+  .rbc-off-range-bg {
+    background-color: #f8f9fa;
+  }
+  
+  .rbc-event-content {
+    font-size: 0.85rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  /* Staff legend */
+  .staff-legend {
+    margin-bottom: 20px;
+  }
+  
+  .staff-badge {
+    border-radius: 20px;
+    padding: 5px 10px;
+    margin: 0 5px;
+    color: white;
+    font-weight: 500;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Modal styling */
+  .modal-content {
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  .modal-header {
+    border-bottom: 1px solid #f0f0f0;
+    background-color: #f8f9fa;
+  }
+  
+  .modal-footer {
+    border-top: 1px solid #f0f0f0;
+  }
+  
+  /* Color picker */
+  .color-picker {
+    width: 100% !important;
+    box-shadow: none !important;
+  }
+  
+  /* Date picker customization */
+  .react-datepicker-wrapper {
+    width: 100%;
+  }
+  
+  .react-datepicker__input-container input {
+    width: 100%;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #212529;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .rbc-toolbar {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  
+    .rbc-toolbar-label {
+      margin: 10px 0;
+    }
+  
+    .rbc-btn-group {
+      margin-bottom: 10px;
+    }
+  
+    .staff-legend {
+      justify-content: center;
+    }
+  }
+  
+  
