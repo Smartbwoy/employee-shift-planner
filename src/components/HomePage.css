@@ -1,24 +1,52 @@
-/* HomePage.css */
-
+/* General styles */
 .homepage-container {
-  padding: 2rem;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
 }
 
+/* Header styles */
 .homepage-header {
   margin-bottom: 2rem;
 }
 
-.homepage-nav {
-  margin-bottom: 2rem;
-}
-
+/* Feature card styles */
 .feature-card {
-  margin-bottom: 2rem;
+  transition: all 0.3s ease;
+  border-radius: 8px;
 }
 
-.homepage-footer {
-  margin-top: 2rem;
-  padding: 1rem;
+.feature-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+}
+
+.feature-icon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Stats section styles */
+.stats-section {
+  padding: 3rem 1.5rem;
   background-color: #f8f9fa;
-  border-top: 1px solid #e9ecef;
+}
+
+.stat-icon {
+  font-size: 2rem;
+}
+
+.stat-item {
+  padding: 1rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .homepage-header h1 {
+    font-size: 2.5rem;
+  }
+
+  .feature-icon,
+  .stat-icon {
+    font-size: 2rem;
+  }
 }
