@@ -218,7 +218,18 @@ function ShiftPlanner() {
 
   // Export functions
   const exportToPDF = () => {
+    // Initialize jsPDF with autoTable
     const doc = new jsPDF()
+    
+    // Add title
+    doc.setFontSize(16)
+    doc.text("Employee Shift Schedule", 14, 15)
+    
+    // Add date
+    doc.setFontSize(10)
+    doc.text(`Generated on: ${format(new Date(), "MMMM d, yyyy")}`, 14, 22)
+    
+    // Prepare table data
     const tableColumn = ["Employee", "Date", "Start Time", "End Time", "Notes"]
     const tableRows = []
 
@@ -234,15 +245,31 @@ function ShiftPlanner() {
       tableRows.push(shiftData)
     })
 
-    doc.autoTable({
+    // Add table using autoTable
+    autoTable(doc, {
       head: [tableColumn],
       body: tableRows,
-      startY: 20,
+      startY: 30,
       theme: "grid",
-      headStyles: { fillColor: [79, 70, 229] },
-      styles: { fontSize: 10 },
+      headStyles: {
+        fillColor: [79, 70, 229],
+        textColor: 255,
+        fontStyle: "bold",
+      },
+      styles: {
+        fontSize: 9,
+        cellPadding: 3,
+      },
+      columnStyles: {
+        0: { cellWidth: 40 },
+        1: { cellWidth: 30 },
+        2: { cellWidth: 25 },
+        3: { cellWidth: 25 },
+        4: { cellWidth: 70 },
+      },
     })
 
+    // Save the PDF
     doc.save("shift-schedule.pdf")
   }
 
