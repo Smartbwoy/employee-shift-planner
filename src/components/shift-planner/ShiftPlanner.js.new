@@ -118,104 +118,6 @@ function ShiftPlanner() {
     return colors[Math.floor(Math.random() * colors.length)]
   }
 
-  // Mutations
-  const saveShiftMutation = useMutation({
-    mutationFn: async (shift) => {
-      if (shift.id) {
-        return axios.put(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.schedule}/${shift.id}`, shift)
-      } else {
-        return axios.post(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.schedule}`, shift)
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["schedules"] })
-    },
-    onError: (err) => {
-      setError(`Failed to save shift: ${err.message}`)
-    },
-  })
-
-  const deleteShiftMutation = useMutation({
-    mutationFn: async (id) => {
-      return axios.delete(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.schedule}/${id}`)
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["schedules"] })
-    },
-    onError: (err) => {
-      setError(`Failed to delete shift: ${err.message}`)
-    },
-  })
-
-  // Event handlers
-  const handleSelectSlot = useCallback(({ start, end }) => {
-    setCurrentShift(null)
-    setStartDate(start)
-    setEndDate(end)
-    setNotes("")
-    setSelectedStaff(null)
-    setColor("#4285f4") // Reset to default blue
-    setModalIsOpen(true)
-  }, [])
-
-  const handleSelectEvent = useCallback(
-    (event) => {
-      setCurrentShift(event)
-      setStartDate(new Date(event.start))
-      setEndDate(new Date(event.end))
-      setNotes(event.notes || "")
-
-      const staffMember = staff.find((s) => s.id === event.employeeId)
-      setSelectedStaff(staffMember || null)
-
-      setColor(event.assignedColor || "#4285f4")
-      setModalIsOpen(true)
-    },
-    [staff],
-  )
-
-  const handleColorChange = (color) => {
-    setColor(color.hex)
-  }
-
-  const handleSaveShift = async () => {
-    if (!startDate || !endDate || !selectedStaff) {
-      setError("Please fill in all required fields.")
-      return
-    }
-
-    try {
-      const shift = {
-        id: currentShift?.id,
-        startTime: startDate.toISOString(),
-        endTime: endDate.toISOString(),
-        title: `${format(startDate, "HH:mm")} - ${format(endDate, "HH:mm")}`,
-        notes,
-        employeeId: selectedStaff.id,
-        assignedColor: color,
-        status: true,
-      }
-
-      await saveShiftMutation.mutateAsync(shift)
-      setModalIsOpen(false)
-      setError(null)
-    } catch (err) {
-      setError(`Failed to save shift: ${err.message}`)
-    }
-  }
-
-  const handleDeleteShift = async () => {
-    if (!currentShift?.id) return
-
-    try {
-      await deleteShiftMutation.mutateAsync(currentShift.id)
-      setModalIsOpen(false)
-      setError(null)
-    } catch (err) {
-      setError(`Failed to delete shift: ${err.message}`)
-    }
-  }
-
   // Export functions
   const exportToPDF = () => {
     const doc = new jsPDF()
@@ -509,4 +411,4 @@ function CustomToolbar({ label, onNavigate, onView, views }) {
   )
 }
 
-export default ShiftPlanner
+export default ShiftPlanner 
