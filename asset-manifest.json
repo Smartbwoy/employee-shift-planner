@@ -1,16 +1,21 @@
 {
   "files": {
-    "main.css": "/employee-shift-planner/static/css/main.5bbbc153.css",
-    "main.js": "/employee-shift-planner/static/js/main.d6621c55.js",
-    "static/js/787.7f842bcf.chunk.js": "/employee-shift-planner/static/js/787.7f842bcf.chunk.js",
-    "static/media/logo.svg": "/employee-shift-planner/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg",
+    "main.css": "/employee-shift-planner/static/css/main.c66d6d66.css",
+    "main.js": "/employee-shift-planner/static/js/main.c4e16f1c.js",
+    "static/js/239.0d7c18be.chunk.js": "/employee-shift-planner/static/js/239.0d7c18be.chunk.js",
+    "static/js/977.4431b929.chunk.js": "/employee-shift-planner/static/js/977.4431b929.chunk.js",
+    "static/js/455.856c77ba.chunk.js": "/employee-shift-planner/static/js/455.856c77ba.chunk.js",
+    "static/js/453.03097c58.chunk.js": "/employee-shift-planner/static/js/453.03097c58.chunk.js",
     "index.html": "/employee-shift-planner/index.html",
-    "main.5bbbc153.css.map": "/employee-shift-planner/static/css/main.5bbbc153.css.map",
-    "main.d6621c55.js.map": "/employee-shift-planner/static/js/main.d6621c55.js.map",
-    "787.7f842bcf.chunk.js.map": "/employee-shift-planner/static/js/787.7f842bcf.chunk.js.map"
+    "main.c66d6d66.css.map": "/employee-shift-planner/static/css/main.c66d6d66.css.map",
+    "main.c4e16f1c.js.map": "/employee-shift-planner/static/js/main.c4e16f1c.js.map",
+    "239.0d7c18be.chunk.js.map": "/employee-shift-planner/static/js/239.0d7c18be.chunk.js.map",
+    "977.4431b929.chunk.js.map": "/employee-shift-planner/static/js/977.4431b929.chunk.js.map",
+    "455.856c77ba.chunk.js.map": "/employee-shift-planner/static/js/455.856c77ba.chunk.js.map",
+    "453.03097c58.chunk.js.map": "/employee-shift-planner/static/js/453.03097c58.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.5bbbc153.css",
-    "static/js/main.d6621c55.js"
+    "static/css/main.c66d6d66.css",
+    "static/js/main.c4e16f1c.js"
   ]
 }
