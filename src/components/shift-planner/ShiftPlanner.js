@@ -19,7 +19,8 @@ import "./ShiftPlanner.css"
 
 // API configuration
 const API_CONFIG = {
-  baseUrl: "http://localhost:5113/api",
+  //baseUrl: "http://localhost:5113/api",
+  baseUrl: "https://employeeschedulerapi.azurewebsites.net/api",
   endpoints: {
     schedule: "/Schedule",
     employee: "/Employee",
