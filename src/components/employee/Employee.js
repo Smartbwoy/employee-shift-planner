@@ -31,41 +31,76 @@ import {
 import axios from "axios"
 import { useTable, usePagination, useSortBy, useGlobalFilter } from "react-table"
 import "./Employee.css"
+import config from '../../config/config';
 
 function Employee() {
   // State management
   const [employees, setEmployees] = useState([])
+  const [positions, setPositions] = useState([])
   const [showModal, setShowModal] = useState(false)
+  const [showPositionModal, setShowPositionModal] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [selectedEmployee, setSelectedEmployee] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
   const [formErrors, setFormErrors] = useState({})
   const [submitLoading, setSubmitLoading] = useState(false)
+  const [positionFormData, setPositionFormData] = useState({
+    title: '',
+    description: '',
+    isActive: true
+  })
 
-  const baseApiUrl = "http://localhost:5113/api"
-
-  // Fetch employees from the database on component mount
+  // Fetch employees and positions from the database on component mount
   useEffect(() => {
-    const fetchEmployees = async () => {
+    const fetchData = async () => {
       try {
         setIsLoading(true)
-        const response = await axios.get(`${baseApiUrl}/Employee`)
-        setEmployees(response.data)
+        const [employeesResponse, positionsResponse] = await Promise.all([
+          axios.get(`${config.api.baseUrl}${config.api.endpoints.employees}`),
+          axios.get(`${config.api.baseUrl}${config.api.endpoints.positions}`)
+        ])
+        setEmployees(employeesResponse.data)
+        setPositions(positionsResponse.data)
         setError(null)
       } catch (error) {
-        console.error("Error fetching employees:", error)
-        setError("Failed to load employees. Please try again later.")
+        console.error("Error fetching data:", error)
+        setError("Failed to load data. Please try again later.")
       } finally {
         setIsLoading(false)
       }
     }
 
-    fetchEmployees()
+    fetchData()
   }, [])
+
+  const handlePositionSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post(`${config.api.baseUrl}${config.api.endpoints.positions}`, positionFormData);
+      const response = await axios.get(`${config.api.baseUrl}${config.api.endpoints.positions}`);
+      setPositions(response.data);
+      setShowPositionModal(false);
+      setPositionFormData({ title: '', description: '', isActive: true });
+    } catch (error) {
+      console.error('Error creating position:', error);
+    }
+  };
+
+  const handlePositionChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setPositionFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  };
 
   const validateForm = (formData) => {
     const errors = {}
+
+    if (!formData.employeeID.trim()) {
+      errors.employeeID = "Employee ID is required"
+    }
 
     if (!formData.firstName.trim()) {
       errors.firstName = "First name is required"
@@ -75,8 +110,8 @@ function Employee() {
       errors.lastName = "Last name is required"
     }
 
-    if (!formData.position.trim()) {
-      errors.position = "Position is required"
+    if (!formData.positionId) {
+      errors.positionId = "Position is required"
     }
 
     if (!formData.email.trim()) {
@@ -108,11 +143,13 @@ function Employee() {
 
     const form = e.target
     const formData = {
+      employeeID: form.employeeID.value,
       firstName: form.firstName.value,
       middleName: form.middleName.value,
       lastName: form.lastName.value,
-      position: form.position.value,
+      positionId: parseInt(form.positionId.value),
       email: form.email.value,
+      active: true
     }
 
     // Validate form
@@ -126,27 +163,15 @@ function Employee() {
     try {
       if (isEditing && selectedEmployee) {
         // Update employee via API
-        await axios.put(`${baseApiUrl}/Employee/${selectedEmployee.employeeID}`, {
-          employeeID: selectedEmployee.employeeID,
-          ...formData,
-          status: true,
-        })
+        await axios.put(`${config.api.baseUrl}${config.api.endpoints.employees}/${selectedEmployee.employeeID}`, formData)
 
         setEmployees((prev) =>
           prev.map((emp) => (emp.employeeID === selectedEmployee.employeeID ? { ...emp, ...formData } : emp)),
         )
-
-        // Show success message or notification here
       } else {
         // Add new employee via API
-        const response = await axios.post(`${baseApiUrl}/Employee`, {
-          employeeID: "empID", // This seems to be a placeholder in your original code
-          ...formData,
-          status: true,
-        })
-
+        const response = await axios.post(`${config.api.baseUrl}${config.api.endpoints.employees}`, formData)
         setEmployees((prev) => [...prev, response.data])
-        // Show success message or notification here
       }
 
       handleCloseModal()
@@ -161,9 +186,8 @@ function Employee() {
   const handleDeleteEmployee = async (id) => {
     if (window.confirm("Are you sure you want to delete this employee?")) {
       try {
-        await axios.delete(`${baseApiUrl}/Employee/${id}`)
+        await axios.delete(`${config.api.baseUrl}${config.api.endpoints.employees}/${id}`)
         setEmployees((prev) => prev.filter((employee) => employee.employeeID !== id))
-        // Show success message or notification here
       } catch (error) {
         console.error("Error deleting employee:", error)
         setError("Failed to delete employee. Please try again.")
@@ -454,6 +478,22 @@ function Employee() {
           <Modal.Body>
             <Row>
               <Col md={6}>
+                <Form.Group controlId="formEmployeeID" className="mb-3">
+                  <Form.Label>
+                    Employee ID <span className="text-danger">*</span>
+                  </Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="employeeID"
+                    placeholder="Enter employee ID"
+                    defaultValue={selectedEmployee ? selectedEmployee.employeeID : ""}
+                    isInvalid={!!formErrors.employeeID}
+                    disabled={isEditing}
+                  />
+                  <Form.Control.Feedback type="invalid">{formErrors.employeeID}</Form.Control.Feedback>
+                </Form.Group>
+              </Col>
+              <Col md={6}>
                 <Form.Group controlId="formFirstName" className="mb-3">
                   <Form.Label>
                     First Name <span className="text-danger">*</span>
@@ -468,22 +508,21 @@ function Employee() {
                   <Form.Control.Feedback type="invalid">{formErrors.firstName}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
-              <Col md={6}>
-                <Form.Group controlId="formLastName" className="mb-3">
-                  <Form.Label>
-                    Last Name <span className="text-danger">*</span>
-                  </Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="lastName"
-                    placeholder="Enter last name"
-                    defaultValue={selectedEmployee ? selectedEmployee.lastName : ""}
-                    isInvalid={!!formErrors.lastName}
-                  />
-                  <Form.Control.Feedback type="invalid">{formErrors.lastName}</Form.Control.Feedback>
-                </Form.Group>
-              </Col>
             </Row>
+
+            <Form.Group controlId="formLastName" className="mb-3">
+              <Form.Label>
+                Last Name <span className="text-danger">*</span>
+              </Form.Label>
+              <Form.Control
+                type="text"
+                name="lastName"
+                placeholder="Enter last name"
+                defaultValue={selectedEmployee ? selectedEmployee.lastName : ""}
+                isInvalid={!!formErrors.lastName}
+              />
+              <Form.Control.Feedback type="invalid">{formErrors.lastName}</Form.Control.Feedback>
+            </Form.Group>
 
             <Form.Group controlId="formMiddleName" className="mb-3">
               <Form.Label>Middle Name</Form.Label>
@@ -495,23 +534,30 @@ function Employee() {
               />
             </Form.Group>
 
-            <Form.Group controlId="formPosition" className="mb-3">
-              <Form.Label>
-                Position <span className="text-danger">*</span>
-              </Form.Label>
+            <Form.Group className="mb-3">
+              <Form.Label>Position</Form.Label>
               <InputGroup>
-                <InputGroup.Text>
-                  <BriefcaseFill />
-                </InputGroup.Text>
-                <Form.Control
-                  type="text"
-                  name="position"
-                  placeholder="Enter position"
-                  defaultValue={selectedEmployee ? selectedEmployee.position : ""}
-                  isInvalid={!!formErrors.position}
-                />
-                <Form.Control.Feedback type="invalid">{formErrors.position}</Form.Control.Feedback>
+                <Form.Select
+                  name="positionId"
+                  defaultValue={selectedEmployee?.positionId || ""}
+                  isInvalid={!!formErrors.positionId}
+                >
+                  <option value="">Select a position</option>
+                  {positions.map(position => (
+                    <option key={position.positionId} value={position.positionId}>
+                      {position.title}
+                    </option>
+                  ))}
+                </Form.Select>
+                <Button variant="outline-secondary" onClick={() => setShowPositionModal(true)}>
+                  Add New Position
+                </Button>
               </InputGroup>
+              {formErrors.positionId && (
+                <Form.Control.Feedback type="invalid">
+                  {formErrors.positionId}
+                </Form.Control.Feedback>
+              )}
             </Form.Group>
 
             <Form.Group controlId="formEmail" className="mb-3">
@@ -551,6 +597,48 @@ function Employee() {
             </Button>
           </Modal.Footer>
         </Form>
+      </Modal>
+
+      <Modal show={showPositionModal} onHide={() => setShowPositionModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Add New Position</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form onSubmit={handlePositionSubmit}>
+            <Form.Group className="mb-3">
+              <Form.Label>Title</Form.Label>
+              <Form.Control
+                type="text"
+                name="title"
+                value={positionFormData.title}
+                onChange={handlePositionChange}
+                required
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Description</Form.Label>
+              <Form.Control
+                as="textarea"
+                name="description"
+                value={positionFormData.description}
+                onChange={handlePositionChange}
+                rows={3}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Check
+                type="checkbox"
+                name="isActive"
+                label="Active"
+                checked={positionFormData.isActive}
+                onChange={handlePositionChange}
+              />
+            </Form.Group>
+            <Button variant="primary" type="submit">
+              Save Position
+            </Button>
+          </Form>
+        </Modal.Body>
       </Modal>
     </Container>
   )
