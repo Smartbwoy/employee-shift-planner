@@ -16,7 +16,7 @@ function App() {
         <RouterComponent>
             <NavigationBar/>
             <Routes>
-                <Route exact path="/" element={<HomePage/>}/>
+                <Route exact path="#/" element={<HomePage/>}/>
                 <Route exact path="/employee-shift-planner" element={<HomePage/>}/>
                 <Route path='/shiftplanner' element={<ShiftPlanner/>}/>
                 <Route path='/employee' element={<Employee/>}/>
