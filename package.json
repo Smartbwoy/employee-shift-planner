@@ -1,7 +1,7 @@
 {
   "name": "employee-shift-planner",
   "version": "0.1.0",
-  "homepage": "https://smartbwoy.github.io/employee-shift-planner",
+  "homepage": "https://salmon-glacier-00cf39b10.6.azurestaticapps.net",
   "private": true,
   "dependencies": {
     "@tanstack/react-query": "^5.62.8",
