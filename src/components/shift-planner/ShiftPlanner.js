@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import axios from "axios"
-import { Calendar, dateFnsLocalizer } from "react-big-calendar"
+import { Calendar, dateFnsLocalizer, Views } from "react-big-calendar"
 import { format, parse, startOfWeek, getDay } from "date-fns"
 import { enUS } from "date-fns/locale"
 import "react-big-calendar/lib/css/react-big-calendar.css"
@@ -48,6 +48,8 @@ function ShiftPlanner() {
   const [selectedStaff, setSelectedStaff] = useState(null)
   const [color, setColor] = useState("#4285f4")
   const [error, setError] = useState(null)
+  const [view, setView] = useState(Views.WEEK)
+  const [selectedDate, setSelectedDate] = useState(new Date())
 
   const queryClient = useQueryClient()
 
@@ -297,6 +299,64 @@ function ShiftPlanner() {
     window.print()
   }
 
+  // Custom event component
+  const EventComponent = ({ event }) => {
+    const staffMember = staff.find((s) => s.id === event.employeeId)
+    return (
+      <div className="custom-event">
+        <div className="event-title">{staffMember?.name || "Unassigned"}</div>
+        <div className="event-time">
+          {format(new Date(event.start), "HH:mm")} - {format(new Date(event.end), "HH:mm")}
+        </div>
+        {event.notes && <div className="event-notes">{event.notes}</div>}
+      </div>
+    )
+  }
+
+  // Custom toolbar component
+  const CustomToolbar = ({ label, onNavigate, onView, views }) => {
+    return (
+      <div className="rbc-toolbar">
+        <span className="rbc-btn-group">
+          <Button
+            variant="outline-primary"
+            onClick={() => onNavigate("PREV")}
+            size="sm"
+          >
+            ‹
+          </Button>
+          <Button
+            variant="outline-primary"
+            onClick={() => onNavigate("TODAY")}
+            size="sm"
+          >
+            Today
+          </Button>
+          <Button
+            variant="outline-primary"
+            onClick={() => onNavigate("NEXT")}
+            size="sm"
+          >
+            ›
+          </Button>
+        </span>
+        <span className="rbc-toolbar-label">{label}</span>
+        <span className="rbc-btn-group">
+          {views.map((view) => (
+            <Button
+              key={view}
+              variant={view === view ? "primary" : "outline-primary"}
+              onClick={() => onView(view)}
+              size="sm"
+            >
+              {view.charAt(0).toUpperCase() + view.slice(1)}
+            </Button>
+          ))}
+        </span>
+      </div>
+    )
+  }
+
   // Loading states
   if (isShiftsLoading || isEmployeesLoading) {
     return (
@@ -383,11 +443,28 @@ function ShiftPlanner() {
               onSelectSlot={handleSelectSlot}
               onSelectEvent={handleSelectEvent}
               selectable
-              views={["month", "week", "day"]}
-              defaultView="week"
+              views={[Views.MONTH, Views.WEEK, Views.DAY]}
+              view={view}
+              onView={setView}
+              date={selectedDate}
+              onNavigate={setSelectedDate}
               components={{
+                event: EventComponent,
                 toolbar: CustomToolbar,
               }}
+              eventPropGetter={(event) => ({
+                style: {
+                  backgroundColor: event.assignedColor || "#4285f4",
+                  border: "none",
+                  borderRadius: "4px",
+                  opacity: 0.9,
+                  color: "#fff",
+                  padding: "2px 5px",
+                },
+              })}
+              dayLayoutAlgorithm="no-overlap"
+              popup
+              popupOffset={30}
             />
           </div>
         </Card.Body>
@@ -490,50 +567,6 @@ function ShiftPlanner() {
         </Modal.Footer>
       </Modal>
     </Container>
-  )
-}
-
-// Custom toolbar component
-function CustomToolbar({ label, onNavigate, onView, views }) {
-  return (
-    <div className="rbc-toolbar">
-      <span className="rbc-btn-group">
-        <Button
-          variant="outline-primary"
-          onClick={() => onNavigate("PREV")}
-          size="sm"
-        >
-          ‹
-        </Button>
-        <Button
-          variant="outline-primary"
-          onClick={() => onNavigate("TODAY")}
-          size="sm"
-        >
-          Today
-        </Button>
-        <Button
-          variant="outline-primary"
-          onClick={() => onNavigate("NEXT")}
-          size="sm"
-        >
-          ›
-        </Button>
-      </span>
-      <span className="rbc-toolbar-label">{label}</span>
-      <span className="rbc-btn-group">
-        {views.map((view) => (
-          <Button
-            key={view}
-            variant="outline-primary"
-            onClick={() => onView(view)}
-            size="sm"
-          >
-            {view.charAt(0).toUpperCase() + view.slice(1)}
-          </Button>
-        ))}
-      </span>
-    </div>
   )
 }
 
