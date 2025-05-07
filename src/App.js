@@ -8,6 +8,7 @@ import ShiftPlanner from './components/shift-planner/ShiftPlanner';
 import Employee from './components/employee/Employee'
 import HomePage from './components/HomePage';
 import Login from './components/Login';
+import Signup from './components/Signup';
 
 function App() {
     return (
@@ -19,6 +20,7 @@ function App() {
                 <Route path='/shiftplanner' element={<ShiftPlanner/>}/>
                 <Route path='/employee' element={<Employee/>}/>
                 <Route path='/login' element={<Login/>}/>
+                <Route path='/signup' element={<Signup/>}/>
             </Routes>
         </>
     )
