@@ -342,14 +342,14 @@ function ShiftPlanner() {
         </span>
         <span className="rbc-toolbar-label">{label}</span>
         <span className="rbc-btn-group">
-          {views.map((view) => (
+          {views.map((viewType) => (
             <Button
-              key={view}
-              variant={view === view ? "primary" : "outline-primary"}
-              onClick={() => onView(view)}
+              key={viewType}
+              variant={viewType === view ? "primary" : "outline-primary"}
+              onClick={() => onView(viewType)}
               size="sm"
             >
-              {view.charAt(0).toUpperCase() + view.slice(1)}
+              {viewType.charAt(0).toUpperCase() + viewType.slice(1)}
             </Button>
           ))}
         </span>
