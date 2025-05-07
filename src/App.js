@@ -7,6 +7,7 @@ import { Route, Routes } from 'react-router-dom';
 import ShiftPlanner from './components/shift-planner/ShiftPlanner';
 import Employee from './components/employee/Employee'
 import HomePage from './components/HomePage';
+import Login from './components/Login';
 
 function App() {
     return (
@@ -17,6 +18,7 @@ function App() {
                 <Route exact path="/employee-shift-planner" element={<HomePage/>}/>
                 <Route path='/shiftplanner' element={<ShiftPlanner/>}/>
                 <Route path='/employee' element={<Employee/>}/>
+                <Route path='/login' element={<Login/>}/>
             </Routes>
         </>
     )
