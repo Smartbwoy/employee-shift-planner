@@ -14,6 +14,7 @@ import {
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Logo from './Logo';
 
 function Signup() {
   const navigate = useNavigate();
@@ -105,6 +106,9 @@ function Signup() {
           alignItems: 'center',
         }}
       >
+        <Box sx={{ mb: 4 }}>
+          <Logo size="large" />
+        </Box>
         <Paper
           elevation={3}
           sx={{
@@ -154,58 +158,58 @@ function Signup() {
                 />
               </Grid>
             </Grid>
-            <TextField
+                <TextField
               margin="normal"
-              required
-              fullWidth
+                  required
+                  fullWidth
               id="email"
-              label="Email Address"
-              name="email"
+                  label="Email Address"
+                  name="email"
               autoComplete="email"
-              value={formData.email}
-              onChange={handleChange}
-              error={!!errors.email}
-              helperText={errors.email}
-            />
-            <TextField
+                  value={formData.email}
+                  onChange={handleChange}
+                  error={!!errors.email}
+                  helperText={errors.email}
+                />
+                <TextField
               margin="normal"
-              required
-              fullWidth
-              name="password"
+                  required
+                  fullWidth
+                  name="password"
               label="Password"
-              type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? 'text' : 'password'}
               id="password"
               autoComplete="new-password"
-              value={formData.password}
-              onChange={handleChange}
-              error={!!errors.password}
-              helperText={errors.password}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label="toggle password visibility"
-                      onClick={() => setShowPassword(!showPassword)}
-                      edge="end"
-                    >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-            />
-            <TextField
+                  value={formData.password}
+                  onChange={handleChange}
+                  error={!!errors.password}
+                  helperText={errors.password}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={() => setShowPassword(!showPassword)}
+                          edge="end"
+                        >
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+                <TextField
               margin="normal"
-              required
-              fullWidth
-              name="confirmPassword"
+                  required
+                  fullWidth
+                  name="confirmPassword"
               label="Confirm Password"
               type={showConfirmPassword ? 'text' : 'password'}
               id="confirmPassword"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              error={!!errors.confirmPassword}
-              helperText={errors.confirmPassword}
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  error={!!errors.confirmPassword}
+                  helperText={errors.confirmPassword}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">

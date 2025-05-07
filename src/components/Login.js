@@ -13,6 +13,7 @@ import {
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { loginUser } from '../services/authService';
+import Logo from './Logo';
 
 function Login() {
   const navigate = useNavigate();
@@ -81,6 +82,9 @@ function Login() {
           alignItems: 'center',
         }}
       >
+        <Box sx={{ mb: 4 }}>
+          <Logo size="large" />
+        </Box>
         <Paper
           elevation={3}
           sx={{
