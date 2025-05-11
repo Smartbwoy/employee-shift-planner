@@ -21,8 +21,8 @@ import config from '../config/config';
 function Signup() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
+    //firstName: '',
+    //lastName: '',
     email: '',
     password: '',
     confirmPassword: '',
@@ -51,12 +51,12 @@ function Signup() {
 
   const validateForm = () => {
     const newErrors = {};
-    if (!formData.firstName.trim()) {
-      newErrors.firstName = 'First name is required';
-    }
-    if (!formData.lastName.trim()) {
-      newErrors.lastName = 'Last name is required';
-    }
+    // if (!formData.firstName.trim()) {
+    //   newErrors.firstName = 'First name is required';
+    // }
+    // if (!formData.lastName.trim()) {
+    //   newErrors.lastName = 'Last name is required';
+    // }
     if (!formData.email.trim()) {
       newErrors.email = 'Email is required';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
@@ -140,8 +140,7 @@ function Signup() {
           )}
           <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%' }}>
             <Grid container spacing={2}>
-              {/*
-              <Grid item xs={12} sm={6}>
+              {/*<Grid item xs={12} sm={6}>
                 <TextField
                   required
                   fullWidth
@@ -182,8 +181,7 @@ function Signup() {
                     },
                   }}
                 />
-              </Grid>
-              */}
+              </Grid>*/}
             </Grid>
             <TextField
               margin="normal"
