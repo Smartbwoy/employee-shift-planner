@@ -5,6 +5,7 @@ const config = {
       employees: '/Employee',
       positions: '/position',
       schedule: "/Schedule",
+      register: '/auth/register'
       // Add more endpoints as needed
     }
   }

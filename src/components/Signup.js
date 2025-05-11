@@ -16,6 +16,7 @@ import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Logo from './Logo';
+import config from '../config/config';
 
 function Signup() {
   const navigate = useNavigate();
@@ -82,9 +83,9 @@ function Signup() {
     if (validateForm()) {
       setIsLoading(true);
       try {
-        const response = await axios.post('https://employeeschedulerapi.azurewebsites.net/api/auth/register', {
-          firstName: formData.firstName.trim(),
-          lastName: formData.lastName.trim(),
+        const response = await axios.post(`${config.api.baseUrl}${config.api.endpoints.register}`, {
+          //firstName: formData.firstName.trim(),
+          //lastName: formData.lastName.trim(),
           email: formData.email.trim(),
           password: formData.password,
         });
@@ -139,6 +140,7 @@ function Signup() {
           )}
           <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%' }}>
             <Grid container spacing={2}>
+              {/*
               <Grid item xs={12} sm={6}>
                 <TextField
                   required
@@ -181,6 +183,7 @@ function Signup() {
                   }}
                 />
               </Grid>
+              */}
             </Grid>
             <TextField
               margin="normal"
