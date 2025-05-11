@@ -10,6 +10,7 @@ import {
   IconButton,
   Alert,
   Grid,
+  CircularProgress,
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
@@ -29,6 +30,7 @@ function Signup() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState({});
   const [signupError, setSignupError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -48,21 +50,23 @@ function Signup() {
 
   const validateForm = () => {
     const newErrors = {};
-    if (!formData.firstName) {
+    if (!formData.firstName.trim()) {
       newErrors.firstName = 'First name is required';
     }
-    if (!formData.lastName) {
+    if (!formData.lastName.trim()) {
       newErrors.lastName = 'Last name is required';
     }
-    if (!formData.email) {
+    if (!formData.email.trim()) {
       newErrors.email = 'Email is required';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Email is invalid';
     }
     if (!formData.password) {
       newErrors.password = 'Password is required';
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
+    } else if (formData.password.length < 8) {
+      newErrors.password = 'Password must be at least 8 characters';
+    } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(formData.password)) {
+      newErrors.password = 'Password must contain at least one uppercase letter, one lowercase letter, and one number';
     }
     if (!formData.confirmPassword) {
       newErrors.confirmPassword = 'Please confirm your password';
@@ -76,11 +80,12 @@ function Signup() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
+      setIsLoading(true);
       try {
         const response = await axios.post('https://employeeschedulerapi.azurewebsites.net/api/auth/register', {
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          email: formData.email,
+          firstName: formData.firstName.trim(),
+          lastName: formData.lastName.trim(),
+          email: formData.email.trim(),
           password: formData.password,
         });
 
@@ -90,8 +95,11 @@ function Signup() {
           navigate('/shiftplanner'); // Redirect to shift planner after successful signup
         }
       } catch (error) {
-        setSignupError(error.response?.data?.message || 'Failed to create account');
+        const errorMessage = error.response?.data?.message || 'Failed to create account';
+        setSignupError(errorMessage);
         console.error('Signup failed:', error);
+      } finally {
+        setIsLoading(false);
       }
     }
   };
@@ -117,9 +125,11 @@ function Signup() {
             flexDirection: 'column',
             alignItems: 'center',
             width: '100%',
+            borderRadius: 2,
+            backgroundColor: 'background.paper',
           }}
         >
-          <Typography component="h1" variant="h5" sx={{ mb: 3 }}>
+          <Typography component="h1" variant="h5" sx={{ mb: 3, fontWeight: 'bold' }}>
             Create Account
           </Typography>
           {signupError && (
@@ -141,6 +151,13 @@ function Signup() {
                   onChange={handleChange}
                   error={!!errors.firstName}
                   helperText={errors.firstName}
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      '&:hover fieldset': {
+                        borderColor: 'primary.main',
+                      },
+                    },
+                  }}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -155,61 +172,82 @@ function Signup() {
                   onChange={handleChange}
                   error={!!errors.lastName}
                   helperText={errors.lastName}
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      '&:hover fieldset': {
+                        borderColor: 'primary.main',
+                      },
+                    },
+                  }}
                 />
               </Grid>
             </Grid>
-                <TextField
+            <TextField
               margin="normal"
-                  required
-                  fullWidth
+              required
+              fullWidth
               id="email"
-                  label="Email Address"
-                  name="email"
+              label="Email Address"
+              name="email"
               autoComplete="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  error={!!errors.email}
-                  helperText={errors.email}
-                />
-                <TextField
+              value={formData.email}
+              onChange={handleChange}
+              error={!!errors.email}
+              helperText={errors.email}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  '&:hover fieldset': {
+                    borderColor: 'primary.main',
+                  },
+                },
+              }}
+            />
+            <TextField
               margin="normal"
-                  required
-                  fullWidth
-                  name="password"
+              required
+              fullWidth
+              name="password"
               label="Password"
-                  type={showPassword ? 'text' : 'password'}
+              type={showPassword ? 'text' : 'password'}
               id="password"
               autoComplete="new-password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  error={!!errors.password}
-                  helperText={errors.password}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton
-                          aria-label="toggle password visibility"
-                          onClick={() => setShowPassword(!showPassword)}
-                          edge="end"
-                        >
-                          {showPassword ? <VisibilityOff /> : <Visibility />}
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-                <TextField
+              value={formData.password}
+              onChange={handleChange}
+              error={!!errors.password}
+              helperText={errors.password}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={() => setShowPassword(!showPassword)}
+                      edge="end"
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  '&:hover fieldset': {
+                    borderColor: 'primary.main',
+                  },
+                },
+              }}
+            />
+            <TextField
               margin="normal"
-                  required
-                  fullWidth
-                  name="confirmPassword"
+              required
+              fullWidth
+              name="confirmPassword"
               label="Confirm Password"
               type={showConfirmPassword ? 'text' : 'password'}
               id="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  error={!!errors.confirmPassword}
-                  helperText={errors.confirmPassword}
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              error={!!errors.confirmPassword}
+              helperText={errors.confirmPassword}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
@@ -223,20 +261,51 @@ function Signup() {
                   </InputAdornment>
                 ),
               }}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  '&:hover fieldset': {
+                    borderColor: 'primary.main',
+                  },
+                },
+              }}
             />
             <Button
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2 }}
+              disabled={isLoading}
+              sx={{
+                mt: 3,
+                mb: 2,
+                py: 1.5,
+                textTransform: 'none',
+                fontSize: '1rem',
+                fontWeight: 'bold',
+                '&:hover': {
+                  transform: 'translateY(-1px)',
+                  boxShadow: 3,
+                },
+              }}
             >
-              Sign Up
+              {isLoading ? (
+                <CircularProgress size={24} color="inherit" />
+              ) : (
+                'Create Account'
+              )}
             </Button>
             <Button
               fullWidth
               variant="text"
               onClick={() => navigate('/login')}
-              sx={{ mb: 1 }}
+              sx={{
+                mb: 1,
+                textTransform: 'none',
+                fontSize: '0.9rem',
+                '&:hover': {
+                  backgroundColor: 'transparent',
+                  textDecoration: 'underline',
+                },
+              }}
             >
               Already have an account? Sign In
             </Button>
