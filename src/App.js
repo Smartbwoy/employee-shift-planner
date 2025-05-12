@@ -9,6 +9,7 @@ import Employee from './components/employee/Employee'
 import HomePage from './components/HomePage';
 import Login from './components/Login';
 import Signup from './components/Signup';
+import Profile from './components/Profile';
 
 function App() {
     return (
@@ -21,6 +22,7 @@ function App() {
                 <Route path='/employee' element={<Employee/>}/>
                 <Route path='/login' element={<Login/>}/>
                 <Route path='/signup' element={<Signup/>}/>
+                <Route path='/profile' element={<Profile/>}/>
             </Routes>
         </>
     )
