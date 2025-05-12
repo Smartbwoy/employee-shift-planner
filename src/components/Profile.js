@@ -345,7 +345,7 @@ function Profile() {
           </Paper>
 
           {/* Upcoming Shifts */}
-          <Paper elevation={3} sx={{ p: 3, mt: 3 }}>
+          {/*<Paper elevation={3} sx={{ p: 3, mt: 3 }}>
             <Typography variant="h6" gutterBottom>
               Upcoming Shifts
             </Typography>
@@ -367,7 +367,7 @@ function Profile() {
                 </ListItem>
               ))}
             </List>
-          </Paper>
+          </Paper>*/}
         </Grid>
       </Grid>
     </Container>
