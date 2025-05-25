@@ -16,16 +16,7 @@ import { jsPDF } from "jspdf"
 import autoTable from "jspdf-autotable"
 import * as XLSX from "xlsx"
 import "./ShiftPlanner.css"
-
-// API configuration
-const API_CONFIG = {
-  //baseUrl: "http://localhost:5113/api",
-  baseUrl: "https://employeeschedulerapi.azurewebsites.net/api",
-  endpoints: {
-    schedule: "/Schedule",
-    employee: "/Employee",
-  },
-}
+import config from "../../config/config"
 
 // Date localizer setup
 const locales = { "en-US": enUS }
@@ -62,7 +53,7 @@ function ShiftPlanner() {
     queryKey: ["schedules"],
     queryFn: async () => {
       try {
-        const response = await axios.get(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.schedule}`)
+        const response = await axios.get(`${config.api.baseUrl}${config.api.endpoints.schedule}`)
         return response.data
       } catch (error) {
         console.error("Error fetching schedules:", error)
@@ -80,7 +71,7 @@ function ShiftPlanner() {
     queryKey: ["employees"],
     queryFn: async () => {
       try {
-        const response = await axios.get(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.employee}`)
+        const response = await axios.get(`${config.api.baseUrl}${config.api.endpoints.employees}`)
         return response.data
       } catch (error) {
         console.error("Error fetching employees:", error)
@@ -125,9 +116,9 @@ function ShiftPlanner() {
   const saveShiftMutation = useMutation({
     mutationFn: async (shift) => {
       if (shift.id) {
-        return axios.put(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.schedule}/${shift.id}`, shift)
+        return axios.put(`${config.api.baseUrl}${config.api.endpoints.schedule}/${shift.id}`, shift)
       } else {
-        return axios.post(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.schedule}`, shift)
+        return axios.post(`${config.api.baseUrl}${config.api.endpoints.schedule}`, shift)
       }
     },
     onSuccess: () => {
@@ -140,7 +131,7 @@ function ShiftPlanner() {
 
   const deleteShiftMutation = useMutation({
     mutationFn: async (id) => {
-      return axios.delete(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.schedule}/${id}`)
+      return axios.delete(`${config.api.baseUrl}${config.api.endpoints.schedule}/${id}`)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["schedules"] })
