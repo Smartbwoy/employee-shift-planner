@@ -1,5 +1,7 @@
 .positions-container {
   padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .positions-header {
@@ -11,26 +13,21 @@
 
 .positions-header h2 {
   margin: 0;
+  color: #333;
 }
 
 .table {
   background-color: white;
-  border-radius: 8px;
-  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .table th {
   background-color: #f8f9fa;
-  font-weight: 600;
+  border-bottom: 2px solid #dee2e6;
 }
 
-.modal-content {
-  border-radius: 8px;
-}
-
-.form-control:focus {
-  border-color: #80bdff;
-  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+.table td {
+  vertical-align: middle;
 }
 
 .btn-primary {
@@ -61,4 +58,49 @@
 .btn-info:hover {
   background-color: #138496;
   border-color: #117a8b;
+}
+
+.modal-content {
+  border-radius: 8px;
+}
+
+.modal-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.modal-title {
+  color: #333;
+  font-weight: 600;
+}
+
+.form-label {
+  font-weight: 500;
+  color: #495057;
+}
+
+.alert {
+  margin-bottom: 20px;
+}
+
+.form-control:focus {
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+@media (max-width: 768px) {
+  .positions-header {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+
+  .table {
+    font-size: 14px;
+  }
+
+  .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+  }
 } 
