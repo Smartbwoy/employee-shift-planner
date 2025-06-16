@@ -10,7 +10,7 @@ import "react-big-calendar/lib/css/react-big-calendar.css"
 import DatePicker from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
 import { ChromePicker } from "react-color"
-import { Container, Row, Col, Button, Form, Spinner, Modal, Alert, Card, Badge } from "react-bootstrap"
+import { Container, Row, Col, Button, Form, Spinner, Modal, Alert, Card, Badge, Accordion } from "react-bootstrap"
 import { FileEarmarkPdf, FileEarmarkExcel, Printer } from "react-bootstrap-icons"
 import { jsPDF } from "jspdf"
 import autoTable from "jspdf-autotable"
@@ -290,48 +290,33 @@ function ShiftPlanner() {
     window.print()
   }
 
-  // Custom event component
-  const EventComponent = ({ event }) => {
-    const staffMember = staff.find((s) => s.id === event.employeeId)
-    return (
-      <div className="custom-event">
-        <div className="event-title">{staffMember?.name || "Unassigned"}</div>
-        <div className="event-time">
-          {format(new Date(event.start), "HH:mm")} - {format(new Date(event.end), "HH:mm")}
-        </div>
-        {event.notes && <div className="event-notes">{event.notes}</div>}
-      </div>
-    )
-  }
-
-  // Custom toolbar component
+  // Enhanced toolbar with dropdown and search bar
   const CustomToolbar = ({ label, onNavigate, onView, views }) => {
+    const [searchTerm, setSearchTerm] = useState("");
+
+    const handleSearch = (e) => {
+      setSearchTerm(e.target.value);
+      // Implement filtering logic here
+    };
+
     return (
       <div className="rbc-toolbar">
         <span className="rbc-btn-group">
-          <Button
-            variant="outline-primary"
-            onClick={() => onNavigate("PREV")}
-            size="sm"
-          >
-            ‹
-          </Button>
-          <Button
-            variant="outline-primary"
-            onClick={() => onNavigate("TODAY")}
-            size="sm"
-          >
-            Today
-          </Button>
-          <Button
-            variant="outline-primary"
-            onClick={() => onNavigate("NEXT")}
-            size="sm"
-          >
-            ›
-          </Button>
+          <Button variant="outline-primary" onClick={() => onNavigate("PREV")} size="sm">‹</Button>
+          <Button variant="outline-primary" onClick={() => onNavigate("TODAY")} size="sm">Today</Button>
+          <Button variant="outline-primary" onClick={() => onNavigate("NEXT")} size="sm">›</Button>
         </span>
-        <span className="rbc-toolbar-label">{label}</span>
+        <span className="rbc-toolbar-label">
+          <select
+            className="form-select form-select-sm"
+            onChange={(e) => onNavigate(e.target.value)}
+          >
+            {/* Populate dropdown with months/weeks */}
+            <option value="January">January</option>
+            <option value="February">February</option>
+            {/* ...other months... */}
+          </select>
+        </span>
         <span className="rbc-btn-group">
           {views.map((viewType) => (
             <Button
@@ -344,219 +329,247 @@ function ShiftPlanner() {
             </Button>
           ))}
         </span>
+        <input
+          type="text"
+          className="form-control form-control-sm mt-2"
+          placeholder="Search shifts..."
+          value={searchTerm}
+          onChange={handleSearch}
+        />
       </div>
-    )
-  }
+    );
+  };
 
-  // Loading states
-  if (isShiftsLoading || isEmployeesLoading) {
+  // Add tooltips for event details
+  const EventComponent = ({ event }) => {
+    const staffMember = staff.find((s) => s.id === event.employeeId);
     return (
-      <div className="loading-container">
-        <Spinner animation="border" variant="primary" />
-        <p className="mt-3">Loading shift planner...</p>
+      <div className="custom-event" title={`${staffMember?.name || "Unassigned"}: ${event.notes || "No notes"}`}>
+        <strong>{staffMember?.name || "Unassigned"}</strong>
+        <div>{format(new Date(event.start), "HH:mm")} - {format(new Date(event.end), "HH:mm")}</div>
       </div>
-    )
-  }
+    );
+  };
 
-  // Error states
-  if (shiftsError || employeesError) {
+  // Sidebar for employee shift list
+  const Sidebar = ({ selectedDate }) => {
+    const shiftsForDate = shifts.filter(
+      (shift) =>
+        new Date(shift.startTime).toDateString() === selectedDate.toDateString()
+    );
+
     return (
-      <Alert variant="danger" className="m-4">
-        <Alert.Heading>Error Loading Data</Alert.Heading>
-        <p>{shiftsError?.message || employeesError?.message}</p>
-      </Alert>
-    )
-  }
+      <div className="sidebar">
+        <h5>Shifts for {format(selectedDate, "MMMM d, yyyy")}</h5>
+        <ul>
+          {shiftsForDate.map((shift) => {
+            const employee = staff.find((s) => s.id === shift.employeeId);
+            return (
+              <li key={shift.id}>
+                <strong>{employee?.name || "Unassigned"}</strong>:{" "}
+                {format(new Date(shift.startTime), "HH:mm")} -{" "}
+                {format(new Date(shift.endTime), "HH:mm")}
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    );
+  };
 
-  // Prepare events for the calendar
-  const calendarEvents = shifts.map((shift) => ({
-    ...shift,
-    start: new Date(shift.startTime),
-    end: new Date(shift.endTime),
-    title: `${staff.find((s) => s.id === shift.employeeId)?.name || "Unassigned"} (${format(new Date(shift.startTime), "HH:mm")} - ${format(new Date(shift.endTime), "HH:mm")})`,
-  }))
+  // Updated modal with collapsible sections and validation indicators
+  const ShiftModal = () => (
+    <Modal show={modalIsOpen} onHide={() => setModalIsOpen(false)} size="lg" centered>
+      <Modal.Header closeButton>
+        <Modal.Title>{currentShift ? "Edit Shift" : "Create New Shift"}</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        {error && <Alert variant="danger">{error}</Alert>}
+        <Form>
+          <Accordion defaultActiveKey="0">
+            <Accordion.Item eventKey="0">
+              <Accordion.Header>Shift Details</Accordion.Header>
+              <Accordion.Body>
+                <Row>
+                  <Col md={6}>
+                    <Form.Group className="mb-3">
+                      <Form.Label>Start Date & Time</Form.Label>
+                      <DatePicker
+                        selected={startDate}
+                        onChange={(date) => setStartDate(date)}
+                        showTimeSelect
+                        dateFormat="MMMM d, yyyy h:mm aa"
+                        className={`form-control ${!startDate ? "is-invalid" : ""}`}
+                      />
+                    </Form.Group>
+                  </Col>
+                  <Col md={6}>
+                    <Form.Group className="mb-3">
+                      <Form.Label>End Date & Time</Form.Label>
+                      <DatePicker
+                        selected={endDate}
+                        onChange={(date) => setEndDate(date)}
+                        showTimeSelect
+                        dateFormat="MMMM d, yyyy h:mm aa"
+                        className={`form-control ${!endDate ? "is-invalid" : ""}`}
+                      />
+                    </Form.Group>
+                  </Col>
+                </Row>
+              </Accordion.Body>
+            </Accordion.Item>
+            <Accordion.Item eventKey="1">
+              <Accordion.Header>Employee & Notes</Accordion.Header>
+              <Accordion.Body>
+                <Form.Group className="mb-3">
+                  <Form.Label>Employee</Form.Label>
+                  <Form.Select
+                    value={selectedStaff?.id || ""}
+                    onChange={(e) => {
+                      const staffMember = staff.find((s) => s.id === e.target.value);
+                      setSelectedStaff(staffMember);
+                    }}
+                    className={!selectedStaff ? "is-invalid" : ""}
+                  >
+                    <option value="">Select an employee</option>
+                    {staff.map((member) => (
+                      <option key={member.id} value={member.id}>
+                        {member.name}
+                      </option>
+                    ))}
+                  </Form.Select>
+                </Form.Group>
+                <Form.Group className="mb-3">
+                  <Form.Label>Notes</Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    rows={3}
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    placeholder="Add any notes about this shift..."
+                  />
+                </Form.Group>
+              </Accordion.Body>
+            </Accordion.Item>
+          </Accordion>
+        </Form>
+      </Modal.Body>
+      <Modal.Footer>
+        {currentShift && (
+          <Button variant="danger" onClick={handleDeleteShift} className="me-auto">
+            Delete Shift
+          </Button>
+        )}
+        <Button variant="secondary" onClick={() => setModalIsOpen(false)}>
+          Cancel
+        </Button>
+        <Button variant="primary" onClick={handleSaveShift}>
+          Save Shift
+        </Button>
+      </Modal.Footer>
+    </Modal>
+  );
 
+  // Updated main component to include sidebar
   return (
     <Container fluid className="shift-planner-container">
-      <Card className="shadow-sm mb-4">
-        <Card.Body>
-          <h1 className="text-center mb-4">
-            <i className="bi bi-calendar-week me-2"></i>
-            Employee Shift Planner
-          </h1>
+      <Row>
+        <Col md={3}>
+          <Sidebar selectedDate={selectedDate} />
+        </Col>
+        <Col md={9}>
+          <Card className="shadow-sm mb-4">
+            <Card.Body>
+              <h1 className="text-center mb-4">
+                <i className="bi bi-calendar-week me-2"></i>
+                Employee Shift Planner
+              </h1>
+              {/* Export Buttons */}
+              <div className="export-buttons">
+                <Button
+                  variant="outline-primary"
+                  className="export-button"
+                  onClick={exportToPDF}
+                >
+                  <FileEarmarkPdf /> Export PDF
+                </Button>
+                <Button
+                  variant="outline-success"
+                  className="export-button"
+                  onClick={exportToExcel}
+                >
+                  <FileEarmarkExcel /> Export Excel
+                </Button>
+                <Button
+                  variant="outline-secondary"
+                  className="export-button"
+                  onClick={printSchedule}
+                >
+                  <Printer /> Print Schedule
+                </Button>
+              </div>
 
-          {/* Export Buttons */}
-          <div className="export-buttons">
-            <Button
-              variant="outline-primary"
-              className="export-button"
-              onClick={exportToPDF}
-            >
-              <FileEarmarkPdf /> Export PDF
-            </Button>
-            <Button
-              variant="outline-success"
-              className="export-button"
-              onClick={exportToExcel}
-            >
-              <FileEarmarkExcel /> Export Excel
-            </Button>
-            <Button
-              variant="outline-secondary"
-              className="export-button"
-              onClick={printSchedule}
-            >
-              <Printer /> Print Schedule
-            </Button>
-          </div>
-
-          {/* Staff Legend */}
-          <div className="staff-legend d-flex flex-wrap justify-content-center">
-            {staff.map((member) => (
-              <Badge
-                key={member.id}
-                className="staff-badge"
-                style={{ backgroundColor: member.color }}
-              >
-                {member.name}
-              </Badge>
-            ))}
-          </div>
-
-          {/* Calendar */}
-          <div className="calendar-container">
-            <Calendar
-              localizer={localizer}
-              events={calendarEvents}
-              startAccessor="start"
-              endAccessor="end"
-              style={{ height: 600 }}
-              onSelectSlot={handleSelectSlot}
-              onSelectEvent={handleSelectEvent}
-              selectable
-              views={[Views.MONTH, Views.WEEK, Views.DAY]}
-              view={view}
-              onView={setView}
-              date={selectedDate}
-              onNavigate={setSelectedDate}
-              components={{
-                event: EventComponent,
-                toolbar: CustomToolbar,
-              }}
-              eventPropGetter={(event) => ({
-                style: {
-                  backgroundColor: event.assignedColor || "#4285f4",
-                  border: "none",
-                  borderRadius: "4px",
-                  opacity: 0.9,
-                  color: "#fff",
-                  padding: "2px 5px",
-                },
-              })}
-              dayLayoutAlgorithm="no-overlap"
-              popup
-              popupOffset={30}
-            />
-          </div>
-        </Card.Body>
-      </Card>
-
-      {/* Shift Modal */}
-      <Modal
-        show={modalIsOpen}
-        onHide={() => setModalIsOpen(false)}
-        size="lg"
-        centered
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>
-            {currentShift ? "Edit Shift" : "Create New Shift"}
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {error && <Alert variant="danger">{error}</Alert>}
-          <Form>
-            <Row>
-              <Col md={6}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Start Date & Time</Form.Label>
-                  <DatePicker
-                    selected={startDate}
-                    onChange={(date) => setStartDate(date)}
-                    showTimeSelect
-                    dateFormat="MMMM d, yyyy h:mm aa"
-                    className="form-control"
-                  />
-                </Form.Group>
-              </Col>
-              <Col md={6}>
-                <Form.Group className="mb-3">
-                  <Form.Label>End Date & Time</Form.Label>
-                  <DatePicker
-                    selected={endDate}
-                    onChange={(date) => setEndDate(date)}
-                    showTimeSelect
-                    dateFormat="MMMM d, yyyy h:mm aa"
-                    className="form-control"
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
-            <Form.Group className="mb-3">
-              <Form.Label>Employee</Form.Label>
-              <Form.Select
-                value={selectedStaff?.id || ""}
-                onChange={(e) => {
-                  const staffMember = staff.find((s) => s.id === e.target.value)
-                  setSelectedStaff(staffMember)
-                }}
-              >
-                <option value="">Select an employee</option>
+              {/* Staff Legend */}
+              <div className="staff-legend d-flex flex-wrap justify-content-center">
                 {staff.map((member) => (
-                  <option key={member.id} value={member.id}>
+                  <Badge
+                    key={member.id}
+                    className="staff-badge"
+                    style={{ backgroundColor: member.color }}
+                  >
                     {member.name}
-                  </option>
+                  </Badge>
                 ))}
-              </Form.Select>
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Notes</Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={3}
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                placeholder="Add any notes about this shift..."
-              />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Color</Form.Label>
-              <ChromePicker
-                color={color}
-                onChange={handleColorChange}
-                className="color-picker"
-              />
-            </Form.Group>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          {currentShift && (
-            <Button
-              variant="danger"
-              onClick={handleDeleteShift}
-              className="me-auto"
-            >
-              Delete Shift
-            </Button>
-          )}
-          <Button variant="secondary" onClick={() => setModalIsOpen(false)}>
-            Cancel
-          </Button>
-          <Button variant="primary" onClick={handleSaveShift}>
-            Save Shift
-          </Button>
-        </Modal.Footer>
-      </Modal>
+              </div>
+
+              {/* Calendar */}
+              <div className="calendar-container">
+                <Calendar
+                  localizer={localizer}
+                  events={shifts.map((shift) => ({
+                    id: shift.id,
+                    title: `${format(new Date(shift.startTime), "HH:mm")} - ${format(new Date(shift.endTime), "HH:mm")}`,
+                    start: new Date(shift.startTime),
+                    end: new Date(shift.endTime),
+                    notes: shift.notes,
+                    employeeId: shift.employeeId,
+                    assignedColor: shift.assignedColor,
+                  }))}
+                  startAccessor="start"
+                  endAccessor="end"
+                  style={{ height: 600 }}
+                  onSelectSlot={handleSelectSlot}
+                  onSelectEvent={handleSelectEvent}
+                  selectable
+                  views={[Views.MONTH, Views.WEEK, Views.DAY]}
+                  view={view}
+                  onView={setView}
+                  date={selectedDate}
+                  onNavigate={setSelectedDate}
+                  components={{
+                    event: EventComponent,
+                    toolbar: CustomToolbar,
+                  }}
+                  eventPropGetter={(event) => ({
+                    style: {
+                      backgroundColor: event.assignedColor || "#4285f4",
+                      border: "none",
+                      borderRadius: "4px",
+                      opacity: 0.9,
+                      color: "#fff",
+                      padding: "2px 5px",
+                    },
+                  })}
+                  dayLayoutAlgorithm="no-overlap"
+                  popup
+                  popupOffset={30}
+                />
+              </div>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+      <ShiftModal />
     </Container>
   )
 }
