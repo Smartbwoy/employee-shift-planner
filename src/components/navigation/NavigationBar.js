@@ -1,8 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Container, Nav, Navbar, NavDropdown, OverlayTrigger, Tooltip } from "react-bootstrap"
-import { Calendar, People, Gear } from "react-bootstrap-icons"
+import { Container, Nav, Navbar, NavDropdown } from "react-bootstrap"
+import { Calendar, People } from "react-bootstrap-icons"
 import "./NavigationBar.css"
 
 const ProfileIcon = ({ user }) => {

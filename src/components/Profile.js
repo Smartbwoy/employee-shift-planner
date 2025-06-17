@@ -15,21 +15,16 @@ import {
   ListItemIcon,
   Alert,
   CircularProgress,
-  Chip,
 } from '@mui/material';
 import {
-  Person,
   Email,
   Phone,
   Work,
-  AccessTime,
   Edit,
-  Save,
   Cancel,
   LocationOn,
 } from '@mui/icons-material';
 import axios from 'axios';
-import { format } from 'date-fns';
 
 // Dummy data for development
 const dummyProfile = {
@@ -63,22 +58,16 @@ const dummyShifts = [
   },
 ];
 
-function Profile() {
-  const [profile, setProfile] = useState(dummyProfile);
+const Profile = () => {
+  const [profile, setProfile] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
-  const [upcomingShifts, setUpcomingShifts] = useState(dummyShifts);
-  const [totalHours, setTotalHours] = useState(0);
 
   useEffect(() => {
-    // Comment: In production, uncomment these API calls
-    // fetchProfile();
-    // fetchUpcomingShifts();
-    
-    // Using dummy data for now
-    calculateTotalHours(dummyShifts);
+    fetchProfile();
+    fetchUpcomingShifts();
   }, []);
 
   // API Endpoints:
@@ -105,7 +94,6 @@ function Profile() {
       const response = await axios.get('https://employeeschedulerapi.azurewebsites.net/api/schedule/upcoming', {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setUpcomingShifts(response.data);
       calculateTotalHours(response.data);
     } catch (error) {
       console.error('Failed to fetch upcoming shifts:', error);
@@ -119,7 +107,6 @@ function Profile() {
       const hours = (end - start) / (1000 * 60 * 60);
       return acc + hours;
     }, 0);
-    setTotalHours(total);
   };
 
   const handleChange = (e) => {
@@ -176,13 +163,13 @@ function Profile() {
                   mb: 2,
                 }}
               >
-                {profile.firstName.charAt(0)}{profile.lastName.charAt(0)}
+                {profile?.firstName.charAt(0)}{profile?.lastName.charAt(0)}
               </Avatar>
               <Typography variant="h5" gutterBottom>
-                {profile.firstName} {profile.lastName}
+                {profile?.firstName} {profile?.lastName}
               </Typography>
               <Typography variant="subtitle1" color="textSecondary">
-                {profile.position}
+                {profile?.position}
               </Typography>
             </Box>
             <Divider sx={{ my: 2 }} />
@@ -191,25 +178,25 @@ function Profile() {
                 <ListItemIcon>
                   <Email />
                 </ListItemIcon>
-                <ListItemText primary="Email" secondary={profile.email} />
+                <ListItemText primary="Email" secondary={profile?.email} />
               </ListItem>
               <ListItem>
                 <ListItemIcon>
                   <Phone />
                 </ListItemIcon>
-                <ListItemText primary="Phone" secondary={profile.phone} />
+                <ListItemText primary="Phone" secondary={profile?.phone} />
               </ListItem>
               <ListItem>
                 <ListItemIcon>
                   <LocationOn />
                 </ListItemIcon>
-                <ListItemText primary="Location" secondary={profile.location} />
+                <ListItemText primary="Location" secondary={profile?.location} />
               </ListItem>
               <ListItem>
                 <ListItemIcon>
                   <Work />
                 </ListItemIcon>
-                <ListItemText primary="Department" secondary={profile.department} />
+                <ListItemText primary="Department" secondary={profile?.department} />
               </ListItem>
             </List>
           </Paper>
@@ -239,7 +226,7 @@ function Profile() {
                     fullWidth
                     label="First Name"
                     name="firstName"
-                    value={profile.firstName}
+                    value={profile?.firstName}
                     onChange={handleChange}
                     disabled={!isEditing}
                   />
@@ -249,7 +236,7 @@ function Profile() {
                     fullWidth
                     label="Last Name"
                     name="lastName"
-                    value={profile.lastName}
+                    value={profile?.lastName}
                     onChange={handleChange}
                     disabled={!isEditing}
                   />
@@ -259,7 +246,7 @@ function Profile() {
                     fullWidth
                     label="Email"
                     name="email"
-                    value={profile.email}
+                    value={profile?.email}
                     onChange={handleChange}
                     disabled={!isEditing}
                   />
@@ -269,7 +256,7 @@ function Profile() {
                     fullWidth
                     label="Phone"
                     name="phone"
-                    value={profile.phone}
+                    value={profile?.phone}
                     onChange={handleChange}
                     disabled={!isEditing}
                   />
@@ -279,7 +266,7 @@ function Profile() {
                     fullWidth
                     label="Position"
                     name="position"
-                    value={profile.position}
+                    value={profile?.position}
                     onChange={handleChange}
                     disabled={!isEditing}
                   />
@@ -289,7 +276,7 @@ function Profile() {
                     fullWidth
                     label="Department"
                     name="department"
-                    value={profile.department}
+                    value={profile?.department}
                     onChange={handleChange}
                     disabled={!isEditing}
                   />
@@ -299,7 +286,7 @@ function Profile() {
                     fullWidth
                     label="Location"
                     name="location"
-                    value={profile.location}
+                    value={profile?.location}
                     onChange={handleChange}
                     disabled={!isEditing}
                   />
@@ -309,7 +296,7 @@ function Profile() {
                     fullWidth
                     label="Preferred Working Hours"
                     name="preferredWorkingHours"
-                    value={profile.preferredWorkingHours}
+                    value={profile?.preferredWorkingHours}
                     onChange={handleChange}
                     disabled={!isEditing}
                     multiline
@@ -321,7 +308,7 @@ function Profile() {
                     fullWidth
                     label="Bio"
                     name="bio"
-                    value={profile.bio}
+                    value={profile?.bio}
                     onChange={handleChange}
                     disabled={!isEditing}
                     multiline
@@ -343,35 +330,10 @@ function Profile() {
               </Grid>
             </form>
           </Paper>
-
-          {/* Upcoming Shifts */}
-          {/*<Paper elevation={3} sx={{ p: 3, mt: 3 }}>
-            <Typography variant="h6" gutterBottom>
-              Upcoming Shifts
-            </Typography>
-            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-              <Typography variant="subtitle1" color="textSecondary">
-                Total Hours: {totalHours.toFixed(1)}
-              </Typography>
-            </Box>
-            <List>
-              {upcomingShifts.map((shift) => (
-                <ListItem key={shift.id}>
-                  <ListItemIcon>
-                    <AccessTime />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={format(new Date(shift.startTime), 'EEEE, MMMM d, yyyy')}
-                    secondary={`${format(new Date(shift.startTime), 'HH:mm')} - ${format(new Date(shift.endTime), 'HH:mm')}`}
-                  />
-                </ListItem>
-              ))}
-            </List>
-          </Paper>*/}
         </Grid>
       </Grid>
     </Container>
   );
-}
+};
 
 export default Profile; 

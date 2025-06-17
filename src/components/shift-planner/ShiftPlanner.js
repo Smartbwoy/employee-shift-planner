@@ -9,8 +9,7 @@ import { enUS } from "date-fns/locale"
 import "react-big-calendar/lib/css/react-big-calendar.css"
 import DatePicker from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
-import { ChromePicker } from "react-color"
-import { Container, Row, Col, Button, Form, Spinner, Modal, Alert, Card, Badge, Accordion } from "react-bootstrap"
+import { Container, Row, Col, Button, Form, Modal, Alert, Card, Badge, Accordion } from "react-bootstrap"
 import { FileEarmarkPdf, FileEarmarkExcel, Printer } from "react-bootstrap-icons"
 import { jsPDF } from "jspdf"
 import autoTable from "jspdf-autotable"
@@ -47,8 +46,6 @@ function ShiftPlanner() {
   // Fetch schedules
   const {
     data: shifts = [],
-    isLoading: isShiftsLoading,
-    error: shiftsError,
   } = useQuery({
     queryKey: ["schedules"],
     queryFn: async () => {
@@ -65,8 +62,6 @@ function ShiftPlanner() {
   // Fetch employees
   const {
     data: employees = [],
-    isLoading: isEmployeesLoading,
-    error: employeesError,
   } = useQuery({
     queryKey: ["employees"],
     queryFn: async () => {
@@ -167,10 +162,6 @@ function ShiftPlanner() {
     },
     [staff],
   )
-
-  const handleColorChange = (color) => {
-    setColor(color.hex)
-  }
 
   const handleSaveShift = async () => {
     if (!startDate || !endDate || !selectedStaff) {
