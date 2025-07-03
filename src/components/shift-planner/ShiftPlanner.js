@@ -13,7 +13,7 @@ import { Container, Row, Col, Button, Form, Modal, Alert, Card, Badge, Accordion
 import { FileEarmarkPdf, FileEarmarkExcel, Printer } from "react-bootstrap-icons"
 import { jsPDF } from "jspdf"
 import autoTable from "jspdf-autotable"
-import * as XLSX from "xlsx"
+import ExcelJS from "exceljs"
 import "./ShiftPlanner.css"
 import config from "../../config/config"
 
@@ -258,23 +258,61 @@ function ShiftPlanner() {
     doc.save("shift-schedule.pdf")
   }
 
-  const exportToExcel = () => {
-    const worksheet = XLSX.utils.json_to_sheet(
-      shifts.map((shift) => {
-        const employee = staff.find((s) => s.id === shift.employeeId)
-        return {
-          Employee: employee?.name || "Unassigned",
-          Date: format(new Date(shift.startTime), "MMM dd, yyyy"),
-          "Start Time": format(new Date(shift.startTime), "HH:mm"),
-          "End Time": format(new Date(shift.endTime), "HH:mm"),
-          Notes: shift.notes || "",
-        }
-      })
-    )
+  const exportToExcel = async () => {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Shift Schedule');
 
-    const workbook = XLSX.utils.book_new()
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Shift Schedule")
-    XLSX.writeFile(workbook, "shift-schedule.xlsx")
+    // Add headers
+    worksheet.columns = [
+      { header: 'Employee', key: 'employee', width: 30 },
+      { header: 'Date', key: 'date', width: 15 },
+      { header: 'Start Time', key: 'startTime', width: 15 },
+      { header: 'End Time', key: 'endTime', width: 15 },
+      { header: 'Notes', key: 'notes', width: 40 }
+    ];
+
+    // Style the header row
+    worksheet.getRow(1).font = { bold: true };
+    worksheet.getRow(1).fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'FF4285F4' }
+    };
+    worksheet.getRow(1).font = { color: { argb: 'FFFFFFFF' } };
+
+    // Add data
+    shifts.forEach((shift) => {
+      const employee = staff.find((s) => s.id === shift.employeeId);
+      worksheet.addRow({
+        employee: employee?.name || "Unassigned",
+        date: format(new Date(shift.startTime), "MMM dd, yyyy"),
+        startTime: format(new Date(shift.startTime), "HH:mm"),
+        endTime: format(new Date(shift.endTime), "HH:mm"),
+        notes: shift.notes || ""
+      });
+    });
+
+    // Add borders to all cells
+    worksheet.eachRow((row) => {
+      row.eachCell((cell) => {
+        cell.border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' }
+        };
+      });
+    });
+
+    // Generate and download the file
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'shift-schedule.xlsx';
+    a.click();
+    window.URL.revokeObjectURL(url);
   }
 
   const printSchedule = () => {
