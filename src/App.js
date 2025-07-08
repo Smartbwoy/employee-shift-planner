@@ -1,6 +1,6 @@
 // import logo from './logo.svg';
 import './App.css';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import NavigationBar from './components/navigation/NavigationBar';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Route, Routes } from 'react-router-dom';
@@ -10,8 +10,36 @@ import HomePage from './components/HomePage';
 import Login from './components/Login';
 import Signup from './components/Signup';
 import Profile from './components/Profile';
+import { Spinner } from 'react-bootstrap';
 
 function App() {
+    const [initializing, setInitializing] = useState(true);
+
+    useEffect(() => {
+        // Simulate app initialization (e.g., fetching config, auth, etc.)
+        const timer = setTimeout(() => setInitializing(false), 1000);
+        return () => clearTimeout(timer);
+    }, []);
+
+    if (initializing) {
+        return (
+            <div style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                width: '100vw',
+                height: '100vh',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: 'rgba(255,255,255,0.8)',
+                zIndex: 9999
+            }}>
+                <Spinner animation="border" variant="primary" style={{ width: 80, height: 80 }} />
+            </div>
+        );
+    }
+
     return (
         <>
             <NavigationBar/>
