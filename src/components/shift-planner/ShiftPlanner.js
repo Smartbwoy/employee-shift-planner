@@ -380,32 +380,6 @@ function ShiftPlanner() {
     );
   };
 
-  // Sidebar for employee shift list
-  const Sidebar = ({ selectedDate }) => {
-    const shiftsForDate = shifts.filter(
-      (shift) =>
-        new Date(shift.startTime).toDateString() === selectedDate.toDateString()
-    );
-
-    return (
-      <div className="sidebar">
-        <h5>Shifts for {format(selectedDate, "MMMM d, yyyy")}</h5>
-        <ul>
-          {shiftsForDate.map((shift) => {
-            const employee = staff.find((s) => s.id === shift.employeeId);
-            return (
-              <li key={shift.id}>
-                <strong>{employee?.name || "Unassigned"}</strong>:{" "}
-                {format(new Date(shift.startTime), "HH:mm")} -{" "}
-                {format(new Date(shift.endTime), "HH:mm")}
-              </li>
-            );
-          })}
-        </ul>
-      </div>
-    );
-  };
-
   // Updated modal with collapsible sections and validation indicators
   const ShiftModal = () => (
     <Modal show={modalIsOpen} onHide={() => setModalIsOpen(false)} size="lg" centered>
@@ -499,14 +473,11 @@ function ShiftPlanner() {
     </Modal>
   );
 
-  // Updated main component to include sidebar
+  // Updated main component to remove sidebar
   return (
     <Container fluid className="shift-planner-container">
       <Row>
-        <Col md={3}>
-          <Sidebar selectedDate={selectedDate} />
-        </Col>
-        <Col md={9}>
+        <Col md={12}>
           <Card className="shadow-sm mb-4">
             <Card.Body>
               <h1 className="text-center mb-4">
