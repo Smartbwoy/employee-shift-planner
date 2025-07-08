@@ -328,6 +328,21 @@ function ShiftPlanner() {
       // Implement filtering logic here
     };
 
+    // Month selection logic
+    const months = [
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
+    ];
+    const currentYear = selectedDate.getFullYear();
+    const currentMonth = selectedDate.getMonth();
+
+    const handleMonthChange = (e) => {
+      const monthIndex = months.indexOf(e.target.value);
+      if (monthIndex !== -1) {
+        setSelectedDate(new Date(currentYear, monthIndex, 1));
+      }
+    };
+
     return (
       <div className="rbc-toolbar">
         <span className="rbc-btn-group">
@@ -338,12 +353,12 @@ function ShiftPlanner() {
         <span className="rbc-toolbar-label">
           <select
             className="form-select form-select-sm"
-            onChange={(e) => onNavigate(e.target.value)}
+            value={months[currentMonth]}
+            onChange={handleMonthChange}
           >
-            {/* Populate dropdown with months/weeks */}
-            <option value="January">January</option>
-            <option value="February">February</option>
-            {/* ...other months... */}
+            {months.map((month) => (
+              <option key={month} value={month}>{month}</option>
+            ))}
           </select>
         </span>
         <span className="rbc-btn-group">
