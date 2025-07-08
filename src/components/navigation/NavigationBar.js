@@ -47,6 +47,7 @@ const ProfileIcon = ({ user }) => {
 const NavigationBar = () => {
   const [expanded, setExpanded] = useState(false)
   const [user, setUser] = useState(null)
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 992)
 
   useEffect(() => {
     // TODO: Replace with actual user authentication logic
@@ -57,55 +58,73 @@ const NavigationBar = () => {
     setUser(mockUser)
   }, [])
 
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 992)
+      if (window.innerWidth >= 992) {
+        setExpanded(false)
+      }
+    }
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  const handleBackdropClick = () => setExpanded(false)
+
   return (
-    <Navbar expand="lg" className="navbar-custom" expanded={expanded} onToggle={setExpanded} sticky="top">
-      <Container>
-        <Navbar.Brand href="/employee-shift-planner" className="brand-custom">
-          <div className="d-flex align-items-center">
-            <Calendar className="brand-icon me-2" />
-            <span className="brand-text">Employees Shift Planner</span>
-          </div>
-        </Navbar.Brand>
+    <>
+      {expanded && isMobile && (
+        <div className="navbar-backdrop" onClick={handleBackdropClick} />
+      )}
+      <Navbar expand="lg" className="navbar-custom" expanded={expanded} onToggle={setExpanded} sticky="top">
+        <Container>
+          <Navbar.Brand href="/employee-shift-planner" className="brand-custom">
+            <div className="d-flex align-items-center">
+              <Calendar className="brand-icon me-2" />
+              <span className="brand-text">Employees Shift Planner</span>
+            </div>
+          </Navbar.Brand>
 
-        <Navbar.Toggle aria-controls="basic-navbar-nav" className="navbar-toggler-custom" />
+          <Navbar.Toggle aria-controls="basic-navbar-nav" className="navbar-toggler-custom" />
 
-        <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="ms-auto">
-            <Nav.Link href="/shiftplanner" className="nav-link-custom" onClick={() => setExpanded(false)}>
-              <Calendar className="nav-icon" />
-              <span>Planner</span>
-            </Nav.Link>
-
-            <Nav.Link href="/employee" className="nav-link-custom" onClick={() => setExpanded(false)}>
-              <People className="nav-icon" />
-              <span>Manage Employees</span>
-            </Nav.Link>
-
-            {user ? (
-              <NavDropdown
-                title={
-                  <div className="d-inline-flex align-items-center">
-                    <ProfileIcon user={user} />
-                    <span className="ms-2 d-none d-lg-inline">{user.name}</span>
-                  </div>
-                }
-                id="basic-nav-dropdown"
-                className="nav-dropdown-custom profile-dropdown"
-              >
-                <NavDropdown.Item href="/profile">User Profile</NavDropdown.Item>
-                <NavDropdown.Item href="/preferences">Preferences</NavDropdown.Item>
-                <NavDropdown.Divider />
-                <NavDropdown.Item href="/logout">Logout</NavDropdown.Item>
-              </NavDropdown>
-            ) : (
-              <Nav.Link href="/login" className="nav-link-custom" onClick={() => setExpanded(false)}>
-                Login
+          <Navbar.Collapse id="basic-navbar-nav">
+            <Nav className="ms-auto">
+              <Nav.Link href="/shiftplanner" className="nav-link-custom" onClick={() => setExpanded(false)}>
+                <Calendar className="nav-icon" />
+                <span>Planner</span>
               </Nav.Link>
-            )}
-          </Nav>
-        </Navbar.Collapse>
-      </Container>
-    </Navbar>
+
+              <Nav.Link href="/employee" className="nav-link-custom" onClick={() => setExpanded(false)}>
+                <People className="nav-icon" />
+                <span>Manage Employees</span>
+              </Nav.Link>
+
+              {user ? (
+                <NavDropdown
+                  title={
+                    <div className="d-inline-flex align-items-center">
+                      <ProfileIcon user={user} />
+                      <span className="ms-2 d-none d-lg-inline">{user.name}</span>
+                    </div>
+                  }
+                  id="basic-nav-dropdown"
+                  className="nav-dropdown-custom profile-dropdown"
+                >
+                  <NavDropdown.Item href="/profile">User Profile</NavDropdown.Item>
+                  <NavDropdown.Item href="/preferences">Preferences</NavDropdown.Item>
+                  <NavDropdown.Divider />
+                  <NavDropdown.Item href="/logout">Logout</NavDropdown.Item>
+                </NavDropdown>
+              ) : (
+                <Nav.Link href="/login" className="nav-link-custom" onClick={() => setExpanded(false)}>
+                  Login
+                </Nav.Link>
+              )}
+            </Nav>
+          </Navbar.Collapse>
+        </Container>
+      </Navbar>
+    </>
   )
 }
 
