@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box,
   Container,
@@ -33,6 +33,19 @@ const Profile = () => {
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
 
+  // Define fetchUpcomingShifts with useCallback so it is stable for useEffect
+  const fetchUpcomingShifts = useCallback(async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get('https://employeeschedulerapi.azurewebsites.net/api/schedule/upcoming', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      calculateTotalHours(response.data);
+    } catch (error) {
+      console.error('Failed to fetch upcoming shifts:', error);
+    }
+  }, []);
+
   useEffect(() => {
     fetchProfile();
     fetchUpcomingShifts();
@@ -53,18 +66,6 @@ const Profile = () => {
     } catch (error) {
       setError('Failed to load profile');
       setLoading(false);
-    }
-  };
-
-  const fetchUpcomingShifts = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get('https://employeeschedulerapi.azurewebsites.net/api/schedule/upcoming', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      calculateTotalHours(response.data);
-    } catch (error) {
-      console.error('Failed to fetch upcoming shifts:', error);
     }
   };
 
