@@ -26,38 +26,6 @@ import {
 } from '@mui/icons-material';
 import axios from 'axios';
 
-// Dummy data for development
-const dummyProfile = {
-  firstName: 'John',
-  lastName: 'Doe',
-  email: 'john.doe@company.com',
-  phone: '+1 (555) 123-4567',
-  position: 'Senior Developer',
-  department: 'Engineering',
-  location: 'New York Office',
-  preferredWorkingHours: '9:00 AM - 5:00 PM, Monday to Friday',
-  skills: ['React', 'Node.js', 'TypeScript', 'AWS'],
-  bio: 'Experienced software developer with a passion for creating efficient and scalable applications.',
-};
-
-const dummyShifts = [
-  {
-    id: 1,
-    startTime: '2024-03-20T09:00:00',
-    endTime: '2024-03-20T17:00:00',
-  },
-  {
-    id: 2,
-    startTime: '2024-03-21T09:00:00',
-    endTime: '2024-03-21T17:00:00',
-  },
-  {
-    id: 3,
-    startTime: '2024-03-22T09:00:00',
-    endTime: '2024-03-22T17:00:00',
-  },
-];
-
 const Profile = () => {
   const [profile, setProfile] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -68,7 +36,7 @@ const Profile = () => {
   useEffect(() => {
     fetchProfile();
     fetchUpcomingShifts();
-  }, []);
+  }, [fetchUpcomingShifts]);
 
   // API Endpoints:
   // GET /api/employee/profile - Fetch employee profile
@@ -101,7 +69,7 @@ const Profile = () => {
   };
 
   const calculateTotalHours = (shifts) => {
-    const total = shifts.reduce((acc, shift) => {
+    shifts.reduce((acc, shift) => {
       const start = new Date(shift.startTime);
       const end = new Date(shift.endTime);
       const hours = (end - start) / (1000 * 60 * 60);
