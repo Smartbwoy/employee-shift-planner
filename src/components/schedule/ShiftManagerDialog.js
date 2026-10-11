@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   useCancelShift,
   useCreateShift,
   useShiftCandidates,
   useUpdateShift,
 } from "../../api/schedule";
+import Modal from "../ui/Modal";
 import Button from "../ui/Button";
 import StateMessage from "../ui/StateMessage";
 import { toOrganizationDateTimeInput } from "../../lib/format";
@@ -49,14 +50,6 @@ export default function ShiftManagerDialog({ shift, onClose }) {
   });
   const busy = updateShift.isPending || cancelShift.isPending || copyShift.isPending;
 
-  useEffect(() => {
-    const closeOnEscape = (event) => {
-      if (event.key === "Escape" && !busy) onClose();
-    };
-    window.addEventListener("keydown", closeOnEscape);
-    return () => window.removeEventListener("keydown", closeOnEscape);
-  }, [busy, onClose]);
-
   const employeeOptions = useMemo(() => {
     const options = candidates.data ?? [];
     return options.some((candidate) => candidate.employeeId === draft.employeeId)
@@ -100,8 +93,7 @@ export default function ShiftManagerDialog({ shift, onClose }) {
   const error = updateShift.error ?? copyShift.error ?? cancelShift.error;
 
   return (
-    <div className="shift-dialog-backdrop" onMouseDown={(event) => event.target === event.currentTarget && !busy && onClose()}>
-      <section className="card shift-dialog" role="dialog" aria-modal="true" aria-labelledby="shift-dialog-title">
+    <Modal className="shift-dialog" busy={busy} onClose={onClose} aria-labelledby="shift-dialog-title">
         <div className="shift-dialog-heading">
           <div>
             <h2 id="shift-dialog-title">Manage shift</h2>
@@ -152,7 +144,6 @@ export default function ShiftManagerDialog({ shift, onClose }) {
             </Button>
           </div>
         </form>
-      </section>
-    </div>
+    </Modal>
   );
 }

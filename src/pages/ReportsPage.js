@@ -1,5 +1,7 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import DownloadDialog from "../components/ui/DownloadDialog";
+import { downloadReport } from "../lib/reportExport";
 import Shell from "../components/layout/Shell";
 import Button from "../components/ui/Button";
 import Metrics from "../components/ui/Metrics";
@@ -14,41 +16,22 @@ import "./ReportsPage.css";
 export default function ReportsPage() {
   const [searchParams] = useSearchParams();
   const weekStart = useMemo(() => startOfWeek(fromDateParam(searchParams.get("week")) ?? undefined), [searchParams]);
+  const [downloadOpen, setDownloadOpen] = useState(false);
   const report = useWeeklyReport(weekStart);
   useEffect(() => {
     if (!report.isSuccess || !window.location.hash) return;
     window.requestAnimationFrame(() => document.querySelector(window.location.hash)?.scrollIntoView({ block: "start" }));
   }, [report.isSuccess]);
-  const exportExcel = () => {
-    if (!report.data) return;
-    const rows = [
-      ["Employee", "Employee ID", "Scheduled hours"],
-      ...report.data.hoursByEmployee.map((row) => [row.fullName, row.employeeId, row.hours]),
-      [],
-      ["Employee cost forecast", "Employee ID", "Regular hours", "Overtime hours", `Hourly rate (${report.data.currency})`, `Regular cost (${report.data.currency})`, `Overtime cost (${report.data.currency})`, `Total cost (${report.data.currency})`],
-      ...report.data.labourCostByEmployee.map((row) => [row.fullName, row.employeeId, row.regularHours, row.overtimeHours, row.hourlyRate, row.regularCost, row.overtimeCost, row.totalCost]),
-      [],
-      ["Day", "Date", "Scheduled employees", "Required employees", "Hours", "Coverage %", "Coverage gap"],
-      ...report.data.coverageByDay.map((day) => [day.day, day.date, day.scheduledEmployees, day.requiredEmployees, day.hours, day.coveragePercent, day.isGap ? "Yes" : "No"]),
-    ];
-    const csv = rows.map((row) => row.map((cell) => `"${String(cell ?? "").replace(/"/g, '""')}"`).join(",")).join("\r\n");
-    const url = URL.createObjectURL(new Blob(["\ufeff", csv], { type: "text/csv;charset=utf-8" }));
-    const link = document.createElement("a");
-    link.href = url; link.download = `shift-report-${String(report.data.weekStart).slice(0, 10)}.csv`; link.click();
-    URL.revokeObjectURL(url);
-  };
   return (
     <Shell
       active="Reports"
       title="Reports & exports"
       copy={`${formatWeekRange(weekStart)} · Coverage, hours and labour-cost risk.`}
       actions={
-        <>
-          <Button disabled={!report.data} onClick={() => window.print()}>Export PDF</Button>
-          <Button disabled={!report.data} tone="success" onClick={exportExcel}>Export Excel</Button>
-        </>
+        <Button tone="gray" disabled={!report.isSuccess} onClick={() => setDownloadOpen(true)} aria-haspopup="dialog">Download report</Button>
       }
     >
+      {downloadOpen ? <DownloadDialog title="Download report" description={`${formatWeekRange(weekStart)} · Coverage, employee hours and labour costs.`} onDownload={format => downloadReport(format, weekStart, report.data)} onClose={() => setDownloadOpen(false)} /> : null}
       <QueryState query={report}>
         {(data) => <>
           <div id="overview"><Metrics items={[

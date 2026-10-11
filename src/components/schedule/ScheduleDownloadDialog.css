@@ -8,3 +8,5 @@
 .schedule-download-dialog select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface, #fff); color: inherit; font: inherit; font-size: 13px; }
 .schedule-download-dialog .download-draft-note { padding: 10px 12px; border-radius: 8px; color: #8a5a00; background: #fff4d6; }
 .download-dialog-actions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+
+.download-dialog-close { min-width: 44px; min-height: 44px; }

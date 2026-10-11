@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import Modal from "../components/ui/Modal";
 import Shell from "../components/layout/Shell";
 import Button from "../components/ui/Button";
 import ShiftDetailsCard from "../components/schedule/ShiftDetailsCard";
@@ -10,7 +11,7 @@ import { useCreateShift, useShiftCandidates } from "../api/schedule";
 import { useHolidays } from "../api/holidays";
 import { usePositions } from "../api/employees";
 import StateMessage from "../components/ui/StateMessage";
-import { startOfWeek, toDateParam } from "../lib/format";
+import { formatShiftRangeLong, startOfWeek, toDateParam, toOrganizationInstant } from "../lib/format";
 import { fromDateParam } from "../utils/week";
 import "./CreateShiftPage.css";
 
@@ -27,9 +28,10 @@ export default function CreateShiftPage() {
     const start = new Date(selectedWeek); start.setHours(8, 0, 0, 0);
     const end = new Date(start); end.setHours(12);
     const local = (date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}T${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
-    return { role: "Customer Support", startTime: local(start), endTime: local(end), requiredSkill: "", notes: "", breakMinutes: 0 };
+    return { role: "", startTime: local(start), endTime: local(end), requiredSkill: "", notes: "", breakMinutes: 0 };
   }, [selectedWeek]);
   const [draft, setDraft] = useState(initial);
+  const [reviewOpen, setReviewOpen] = useState(false);
   const [employeeId, setEmployeeId] = useState("");
   const candidates = useShiftCandidates({ start: draft.startTime, end: draft.endTime, role: draft.role, requiredSkill: draft.requiredSkill, breakMinutes: draft.breakMinutes });
   const create = useCreateShift();
@@ -39,11 +41,14 @@ export default function CreateShiftPage() {
   const dayHoliday = holidays.data?.[0];
   const validWindow = Boolean(draft.startTime && draft.endTime && new Date(draft.endTime) > new Date(draft.startTime));
   const validBreak = Number(draft.breakMinutes) >= 0 && Number(draft.breakMinutes) <= 240;
-  const canSubmit = Boolean(draft.role.trim() && employeeId && validWindow && validBreak && !create.isPending);
+  const selected = candidates.data?.find(candidate => candidate.employeeId === employeeId && candidate.status === "Available");
+  const canSubmit = Boolean(draft.role.trim() && selected && validWindow && validBreak && dayHoliday?.schedulingPolicy !== "Closed" && !candidates.isFetching && !candidates.isError && !create.isPending);
+  const disabledReason = !validWindow ? "Choose an end time after the start time." : !validBreak ? "Breaks must be between 0 and 240 minutes." : !draft.role.trim() ? "Choose a role for this shift." : dayHoliday?.schedulingPolicy === "Closed" ? "Scheduling is closed on this holiday." : candidates.isFetching ? "Checking employee eligibility…" : candidates.isError ? "Employee eligibility could not be checked." : !selected ? "Select an available employee to continue." : "Review the shift, then save it as a draft.";
   const update = (field, value) => { setDraft((current) => ({ ...current, [field]: value })); if (["role", "requiredSkill", "breakMinutes", "startTime", "endTime"].includes(field)) setEmployeeId(""); };
   const applyTemplate = (template) => { setDraft((current) => ({ ...current, ...template })); setEmployeeId(""); };
   const submit = () => {
-    create.mutate({ ...draft, employeeId, breakMinutes: Number(draft.breakMinutes), status: true, assignedColor: null }, { onSuccess: backToSchedule });
+    if (!canSubmit) return;
+    create.mutate({ ...draft, isPublished: false, employeeId, breakMinutes: Number(draft.breakMinutes), status: true, assignedColor: null }, { onSuccess: backToSchedule });
   };
   const conflict = candidates.data?.find((candidate) => candidate.status !== "Available");
 
@@ -53,6 +58,16 @@ export default function CreateShiftPage() {
       title="Create shift"
       copy={`Planning for the week of ${toDateParam(selectedWeek)}. Assign qualified employees and resolve conflicts before publishing.`}
     >
+      <p className="create-flow">1. Shift details → 2. Eligible employee → 3. Review and save draft</p>
+      {reviewOpen ? <Modal onClose={() => setReviewOpen(false)} busy={create.isPending} aria-labelledby="create-review-title">
+        <h2 id="create-review-title">Review shift</h2>
+        <p><strong>{selected?.fullName || selected?.name}</strong><br />{draft.role}</p>
+        <p>{draft.startTime.slice(0, 10)} · {formatShiftRangeLong(toOrganizationInstant(draft.startTime), toOrganizationInstant(draft.endTime))}<br />Ends {draft.endTime.slice(0, 10)} · {draft.breakMinutes} minute break</p>
+        {draft.notes ? <p>{draft.notes}</p> : null}
+        <p>This shift is saved as a draft. Employees will see it when you publish the week.</p>
+        {create.isError ? <StateMessage tone="error" title="Could not save draft" detail={create.error?.message} /> : null}
+        <div className="modal-actions"><Button tone="gray" disabled={create.isPending} onClick={() => setReviewOpen(false)}>Back to editing</Button><Button disabled={!canSubmit} onClick={submit}>{create.isPending ? "Saving…" : "Save draft"}</Button></div>
+      </Modal> : null}
       <ShiftTemplateTools shift={draft} weekStart={selectedWeek} onApply={applyTemplate} />
       <div className="create">
         <ShiftDetailsCard shift={draft} positions={positions.data ?? []} onChange={update} />
@@ -62,12 +77,12 @@ export default function CreateShiftPage() {
           {dayHoliday ? <StateMessage tone={dayHoliday.schedulingPolicy === "Closed" ? "error" : undefined} title={`${dayHoliday.name} · ${dayHoliday.schedulingPolicy}`} detail={dayHoliday.schedulingPolicy === "Closed" ? "Scheduling is closed on this date." : "This shift falls on a configured holiday; review staffing and pay rules before assigning it."} /> : null}
           {!validWindow ? <StateMessage tone="error" title="Check the shift times" detail="The end time must be after the start time." /> : null}
           {create.isError ? <StateMessage tone="error" title="Could not create shift" detail={create.error?.message} /> : null}
-          <div className="end">
+          <div className="create-submit-bar"><p id="create-disabled-reason">{disabledReason}</p><div className="end">
             <Button tone="gray" onClick={backToSchedule}>
               Cancel
             </Button>
-            <Button disabled={!canSubmit} onClick={submit}>{create.isPending ? "Creating…" : "Create shift"}</Button>
-          </div>
+            <Button disabled={!canSubmit} aria-describedby="create-disabled-reason" onClick={() => setReviewOpen(true)}>Review shift</Button>
+          </div></div>
         </div>
       </div>
     </Shell>

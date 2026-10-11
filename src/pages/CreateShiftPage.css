@@ -26,3 +26,14 @@
     margin-top: 12px;
   }
 }
+
+.create-flow { color: var(--text-secondary); font-size: 14px; }
+.create-submit-bar p { font-size: 14px; color: var(--text-secondary); }
+.create-submit-bar .end { margin-top: 12px; }
+@media (max-width: 700px) {
+  .create { padding-bottom: 160px; }
+  .create-submit-bar { position: fixed; z-index: 110; bottom: calc(66px + env(safe-area-inset-bottom)); left: 0; right: 0; padding: 10px 16px; border-top: 1px solid var(--border); background: var(--surface); box-shadow: var(--shadow-md); }
+  .create-submit-bar p { margin: 0 0 8px; }
+  .create-submit-bar .end { gap: 8px; margin: 0; }
+  .create-submit-bar .btn { flex: 1; min-width: 0; }
+}

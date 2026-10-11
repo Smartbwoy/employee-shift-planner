@@ -59,7 +59,11 @@
     height: auto;
     min-height: 96px;
     gap: 16px;
+    flex-direction: column;
+    margin-bottom: 20px;
   }
+  .actions { flex-wrap: wrap; width: 100%; }
+  .actions .btn { flex: 1 1 140px; min-width: 0; }
 }
 
 @media (max-width: 430px) {

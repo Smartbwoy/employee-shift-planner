@@ -185,3 +185,13 @@ Push requires HTTPS outside localhost, notification permission, the service work
 The [user guide](docs/user-guide/SHIFTLY-USER-GUIDE.md) and [PDF](docs/user-guide/SHIFTLY-USER-GUIDE.pdf) cover manager and employee workflows. Screenshots use fictional data with intercepted API requests.
 
 To refresh screenshots, start the local frontend, then run `npm run capture:guide`. Set `GUIDE_BASE_URL` for a different local URL. Run `npm run build:guide` to regenerate the printable HTML and PDF. Both commands use Chrome; set `PLAYWRIGHT_CHROME_PATH` to override its executable path.
+
+### Mobile workflows
+
+Employee home uses the shared navigation and separates loading, errors, empty schedules, and upcoming shifts. Future shifts offer a swap form with confirmation; completed shifts remain visible as history.
+
+On phones, employee lists use cards, attendance and request history expand on demand, and schedule filters collapse behind a Filters button. Shift editing fills the screen and dialogs keep keyboard focus inside, returning it to the opening control when closed.
+
+Create a shift by choosing a role and times, selecting an available employee, reviewing the details, and saving a draft. Publish week opens a readiness review before employee visibility changes. Schedule and Reports share a download dialog for PDF and native Excel (.xlsx) files.
+
+Run `npm run test:e2e -- e2e/mobile-usability.spec.js --workers=1` to check 320, 375, 430, 600, 768, and 1024px layouts, long names, loading/error states, modal focus, reduced-height editing, and downloaded file contents. These browser checks use mocked API data and do not write production records.

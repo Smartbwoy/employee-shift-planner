@@ -35,6 +35,7 @@ export function useEmployeeShifts(employeeId, from) {
   return useQuery({
     queryKey: ["schedule", "employee", employeeId, from?.toISOString()],
     queryFn: () => get(`/Schedule${query({ employeeId, from })}`),
+    retry: (attempt, error) => !(error.status >= 400 && error.status < 500) && attempt < 2,
     enabled: Boolean(employeeId),
   });
 }

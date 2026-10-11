@@ -13,3 +13,6 @@
 .availability-save { display: flex; justify-content: flex-end; }
 @media (max-width: 1050px) { .availability-rule-row { grid-template-columns: repeat(2, minmax(160px, 1fr)); } }
 @media (max-width: 600px) { .availability-heading { display: grid; } .availability-rule-row { grid-template-columns: 1fr; } }
+
+.availability-person label { width: 100%; min-width: 0; }
+.availability-person select { width: 100%; min-width: 0; }

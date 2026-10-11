@@ -26,10 +26,10 @@ export default function EmployeeTable({ employees }) {
             <i className={toneFor(employee.employeeId)}>{employee.initial}</i>
             <b>{employee.fullName}</b>
           </span>
-          <span>{employee.positionTitle ?? "Unassigned"}</span>
-          <span>{employee.availabilitySummary}</span>
-          <b>{formatHours(employee.scheduledHours)}</b>
-          <span className={employee.status === "Overtime risk" ? "red" : "green"}>
+          <span data-label="Position">{employee.positionTitle ?? "Unassigned"}</span>
+          <span data-label="Availability">{employee.availabilitySummary}</span>
+          <b data-label="Scheduled hours">{formatHours(employee.scheduledHours)}</b>
+          <span data-label="Status" className={employee.status === "Overtime risk" ? "red" : "green"}>
             {employee.status}
           </span>
         </button>

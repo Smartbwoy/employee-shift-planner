@@ -5,6 +5,7 @@ export default function AssignEmployees({ candidates, selectedId, onSelect }) {
   return (
     <section className="card assign">
       <h2>Assign employees</h2>
+      {!candidates.length ? <p>No eligible employees found. Adjust the shift details or check employee availability.</p> : null}
       {candidates.map((candidate) => (
         <label key={candidate.employeeId}>
           <span><input type="radio" name="employeeId" checked={selectedId === candidate.employeeId} disabled={candidate.status !== "Available"} onChange={() => onSelect(candidate.employeeId)} /> {candidate.fullName ?? candidate.name}</span>
