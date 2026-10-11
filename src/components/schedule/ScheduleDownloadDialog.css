@@ -1,0 +1,10 @@
+.schedule-download-dialog { width: min(440px, calc(100vw - 32px)); box-sizing: border-box; padding: 24px; border: 1px solid var(--border); border-radius: 16px; background: var(--surface, #fff); color: var(--text); box-shadow: 0 24px 64px #0003; }
+.schedule-download-dialog::backdrop { background: #10182880; }
+.download-dialog-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.download-dialog-heading h2 { margin: 0; font-size: 20px; }
+.download-dialog-close { border: 0; background: transparent; color: inherit; font-size: 26px; cursor: pointer; width: 36px; height: 36px; }
+.schedule-download-dialog p { font-size: 13px; line-height: 1.6; color: var(--text-secondary); }
+.schedule-download-dialog label { display: block; margin: 20px 0 8px; font-size: 13px; font-weight: 600; }
+.schedule-download-dialog select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface, #fff); color: inherit; font: inherit; font-size: 13px; }
+.schedule-download-dialog .download-draft-note { padding: 10px 12px; border-radius: 8px; color: #8a5a00; background: #fff4d6; }
+.download-dialog-actions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
