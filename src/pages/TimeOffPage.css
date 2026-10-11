@@ -143,3 +143,5 @@
 @media (max-width: 520px) {
   .time-off-date-grid { grid-template-columns: 1fr; }
 }
+
+.time-off-status.cancelled { color: var(--text-secondary); background: var(--surface-subtle); }
