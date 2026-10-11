@@ -112,3 +112,12 @@
 .holiday-week { display: flex; flex-wrap: wrap; gap: 10px; margin: 18px 0; }
 .holiday-week article { display: grid; gap: 3px; padding: 11px 14px; border: 1px solid #f0d994; border-radius: 9px; background: #fff9e8; color: var(--ink); }
 .holiday-week span { color: var(--muted); font-size: 12px; }
+
+@media (max-width: 700px) {
+  .schedule-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .schedule-summary-heading { display: none; }
+  .schedule-summary > button { border-bottom: 1px solid var(--border); }
+  .schedule-summary > button span { font-size: 12px; }
+  .schedule-summary .schedule-summary-report { grid-column: 1 / -1; justify-content: center; }
+  .coverage-warnings > div { grid-template-columns: minmax(0, 1fr); }
+}

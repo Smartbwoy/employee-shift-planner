@@ -57,3 +57,26 @@
   .mobile-schedule-empty b { color: var(--text); font-size: 14px; }
   .mobile-schedule-empty span { font-size: 12px; }
 }
+
+.mobile-filter-toggle { display: none; }
+.clear-filters { min-height: 44px; justify-self: start; border: 0; background: transparent; color: var(--primary); font-weight: 600; }
+@media (max-width: 700px) {
+  .mobile-filter-toggle { display: block; justify-self: start; }
+  .schedule-filters { display: none; }
+  .schedule-filters.open { display: grid; }
+  .mobile-day-heading { grid-template-columns: 44px 1fr 44px; }
+  .mobile-day-heading > button { width: 44px; height: 44px; }
+  .mobile-day-tabs button span, .mobile-shift-status { font-size: 12px; }
+  .view-tabs button, .coverage-day-tabs button { min-height: 44px; }
+  .position-view { grid-template-columns: minmax(0, 1fr); padding-inline: 16px; }
+  .planner-shift > button { min-height: 44px; }
+  .planner-shift b, .planner-shift span { font-size: 13px; }
+  .mobile-shift-card { grid-template-columns: 36px minmax(0,1fr) 12px; gap: 8px; }
+  .mobile-shift-avatar { width: 36px; height: 36px; }
+  .mobile-shift-status { grid-column: 2; justify-self: start; }
+  .mobile-shift-chevron { grid-column: 3; grid-row: 1 / span 2; }
+  .mobile-shift-copy b, .mobile-shift-copy small { white-space: normal; }
+}
+.schedule-builder > * { min-width: 0; }
+.mobile-planner { min-width: 0; max-width: 100%; }
+@media (max-width: 700px) { .mobile-day-tabs { grid-template-columns: repeat(7, minmax(44px, 1fr)); } }

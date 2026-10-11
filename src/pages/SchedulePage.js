@@ -12,6 +12,7 @@ import { useStaffingRequirements } from "../api/staffing";
 import { useEmployees } from "../api/employees";
 import { useHolidays } from "../api/holidays";
 import { isAdministrator } from "../api/auth";
+import PublishWeekDialog from "../components/schedule/PublishWeekDialog";
 import ScheduleDownloadDialog from "../components/schedule/ScheduleDownloadDialog";
 import {
   formatDayHeading,
@@ -28,6 +29,7 @@ export default function SchedulePage() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedShift, setSelectedShift] = useState(null);
+  const [publishOpen, setPublishOpen] = useState(false);
   const [downloadOpen, setDownloadOpen] = useState(false);
   const currentWeek = useMemo(() => startOfWeek(), []);
   const weekStart = useMemo(() => {
@@ -74,9 +76,9 @@ export default function SchedulePage() {
       actions={
         <>
           <Button
-            tone="success"
-            disabled={!draftCount || readiness.isPending || !readiness.data?.isReady || publishWeek.isPending}
-            onClick={() => publishWeek.mutate()}
+            tone="gray"
+            disabled={!draftCount || shifts.isPending || publishWeek.isPending}
+            onClick={() => setPublishOpen(true)}
           >
             {publishWeek.isPending ? "Publishing…" : `Publish week${draftCount ? ` (${draftCount})` : ""}`}
           </Button>
@@ -91,6 +93,7 @@ export default function SchedulePage() {
         </>
       }
     >
+      {publishOpen ? <PublishWeekDialog weekStart={weekStart} draftCount={draftCount} readiness={readiness} publication={publishWeek} onClose={() => setPublishOpen(false)} /> : null}
       <div className="schedule-week-toolbar">
       <nav className="week-navigation" aria-label="Schedule week navigation">
         <Button tone="gray" onClick={() => selectWeek(addWeeks(weekStart, -1))} aria-label="View previous week">

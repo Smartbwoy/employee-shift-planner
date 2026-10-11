@@ -44,3 +44,7 @@
 @media (max-width: 350px) {
   .mobile-nav a, .mobile-nav button { font-size: 9px; letter-spacing: -.01em; }
 }
+
+.app-modal.mobile-more-menu { position: fixed; top: auto; bottom: 0; margin: 0; width: 100%; max-width: none; max-height: 90dvh; color: var(--text); border-radius: 20px 20px 0 0; }
+.mobile-more-heading button { min-width: 44px; min-height: 44px; }
+@media (max-width: 700px) { .mobile-nav a, .mobile-nav button { font-size: 11px; } .mobile-nav a span, .mobile-nav button span { white-space: normal; text-align: center; } }

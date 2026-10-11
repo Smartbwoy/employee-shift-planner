@@ -15,3 +15,5 @@
   font-size: 12px;
   color: #d1e0ff;
 }
+.next { height: auto; min-height: 154px; }
+.next p { font-size: 14px; }

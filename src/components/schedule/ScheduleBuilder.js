@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Button from "../ui/Button";
 import StateMessage from "../ui/StateMessage";
 import { useCancelShift, useCreateShift, useShiftCandidates, useUpdateShift } from "../../api/schedule";
@@ -9,6 +9,7 @@ const VIEWS = ["Employee", "Position", "Coverage"];
 const dayIndex = (value, weekStart) => Math.max(0, Math.min(6, Math.floor((new Date(value) - weekStart) / 86400000)));
 
 export default function ScheduleBuilder({ shifts, employees, requirements, weekStart, days, onOpenShift }) {
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const [view, setView] = useState("Employee");
   const [selected, setSelected] = useState([]);
   const [employeeFilter, setEmployeeFilter] = useState("");
@@ -32,6 +33,8 @@ export default function ScheduleBuilder({ shifts, employees, requirements, weekS
   const filteredShifts = useMemo(() => shifts.filter(shift =>
     (!departmentFilter || shift.role === departmentFilter) &&
     filteredEmployees.some(employee => employee.employeeId === shift.employeeId)), [shifts, filteredEmployees, departmentFilter]);
+  const filterCount = [employeeFilter, departmentFilter, positionFilter].filter(Boolean).length;
+  const clearFilters = () => { setEmployeeFilter(""); setDepartmentFilter(""); setPositionFilter(""); };
   const chosen = filteredShifts.filter(x => selected.includes(x.id));
   const fillShift = chosen.length === 1 ? chosen[0] : null;
   const fillCandidates = useShiftCandidates({ start:fillShift?.startTime, end:fillShift?.endTime, role:fillShift?.role,
@@ -81,10 +84,12 @@ export default function ScheduleBuilder({ shifts, employees, requirements, weekS
   return <section className="schedule-builder">
     <div className="schedule-toolbar card">
       <div className="view-tabs" role="tablist">{VIEWS.map(item => <button key={item} role="tab" aria-selected={view === item} onClick={() => setView(item)}>{item} view</button>)}</div>
-      <div className="schedule-filters">
+      <Button tone="gray" className="mobile-filter-toggle" aria-expanded={filtersOpen} aria-controls="schedule-filter-fields" onClick={() => setFiltersOpen(value => !value)}>Filters{filterCount ? ` (${filterCount})` : ""}</Button>
+      <div id="schedule-filter-fields" className={`schedule-filters${filtersOpen ? " open" : ""}`}>
         <label>Employee<input value={employeeFilter} onChange={e => setEmployeeFilter(e.target.value)} placeholder="Search employees" /></label>
         <label>Department<select value={departmentFilter} onChange={e => setDepartmentFilter(e.target.value)}><option value="">All departments</option>{departments.map(x => <option key={x}>{x}</option>)}</select></label>
         <label>Position<select value={positionFilter} onChange={e => setPositionFilter(e.target.value)}><option value="">All positions</option>{positions.map(x => <option key={x}>{x}</option>)}</select></label>
+        {filterCount ? <button type="button" className="clear-filters" onClick={clearFilters}>Clear filters</button> : null}
       </div>
     </div>
 
@@ -125,6 +130,7 @@ function EmployeeView({ employees, shifts, days, weekStart, selected, toggle, op
 
 function MobileEmployeeView({ employees, shifts, days, weekStart, open }) {
   const [day, setDay] = useState(() => Math.max(0, Math.min(6, Math.floor((new Date() - weekStart) / 86400000))));
+  useEffect(() => { setDay(Math.max(0, Math.min(6, Math.floor((new Date() - weekStart) / 86400000)))); }, [weekStart]);
   const employeeById = Object.fromEntries(employees.map(employee => [employee.employeeId, employee]));
   const dayShifts = shifts.filter(shift => dayIndex(shift.startTime, weekStart) === day).sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
   const moveDay = direction => setDay(value => Math.max(0, Math.min(6, value + direction)));

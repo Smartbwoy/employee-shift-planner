@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { BarChart3, Bell, BriefcaseBusiness, CalendarDays, Clock3, LogOut, MoreHorizontal, Settings, Users } from "lucide-react";
+import Modal from "../ui/Modal";
+import useIsMobile from "../../lib/useIsMobile";
 import { NAV_ITEMS } from "../../data/navigation";
 import { currentRole, currentUserLabel, signOut } from "../../api/auth";
 import shiftlyIcon from "../../assets/shiftly-icon.png";
@@ -19,6 +21,7 @@ const NavIcon = ({ name }) => { const Component = ICONS[name] ?? BriefcaseBusine
  * highlights "Schedule", /employees/:id highlights "Employees".
  */
 export default function Sidebar({ active }) {
+  const mobile = useIsMobile();
   const [moreOpen, setMoreOpen] = useState(false);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -61,11 +64,11 @@ export default function Sidebar({ active }) {
         {primary.map(navLink)}
         <button type="button" className={moreOpen || secondary.some(item => item.label === active) ? "active" : ""} onClick={() => setMoreOpen(value => !value)} aria-expanded={moreOpen} aria-controls="mobile-more-menu"><NavIcon name="more" /><span>More</span></button>
       </nav>
-      {moreOpen ? <div className="mobile-more-backdrop" onClick={() => setMoreOpen(false)}><section id="mobile-more-menu" className="mobile-more-menu" aria-label="More navigation" onClick={event => event.stopPropagation()}>
+      {moreOpen && mobile ? <Modal id="mobile-more-menu" className="mobile-more-menu" aria-label="More navigation" onClose={() => setMoreOpen(false)}>
         <div className="mobile-more-heading"><div><b>{currentUserLabel()}</b><span>{currentRole()}</span></div><button type="button" aria-label="Close more menu" onClick={() => setMoreOpen(false)}>×</button></div>
         <nav>{secondary.map(navLink)}</nav>
         <button type="button" className="mobile-logout" onClick={logout}><NavIcon name="logout" />Log out</button>
-      </section></div> : null}
+      </Modal> : null}
     </aside>
   );
 }

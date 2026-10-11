@@ -1,21 +1,3 @@
-.shift-dialog-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 20;
-  display: grid;
-  place-items: center;
-  padding: 24px;
-  background: rgba(14, 19, 31, 0.58);
-}
-
-.shift-dialog {
-  width: min(760px, 100%);
-  max-height: calc(100vh - 48px);
-  overflow: auto;
-  padding: 26px;
-  box-shadow: 0 22px 60px rgba(14, 19, 31, 0.25);
-}
-
 .shift-dialog-heading {
   display: flex;
   align-items: flex-start;
@@ -126,4 +108,12 @@
   .shift-dialog-actions .btn {
     width: 100%;
   }
+}
+
+.app-modal.shift-dialog { width: min(760px, calc(100vw - 32px)); }
+.shift-dialog-close { min-width: 44px; min-height: 44px; }
+@media (max-width: 700px) {
+  .app-modal.shift-dialog { position: fixed; inset: 0; width: 100%; max-width: none; height: 100dvh; max-height: 100dvh; margin: 0; border: 0; border-radius: 0; padding: 20px 16px calc(20px + env(safe-area-inset-bottom)); }
+  .shift-dialog-heading { gap: 12px; }
+  .shift-dialog-actions { position: sticky; bottom: 0; padding: 12px 0; background: var(--surface); }
 }
