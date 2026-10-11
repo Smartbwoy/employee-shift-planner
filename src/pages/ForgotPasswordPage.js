@@ -1,3 +1,4 @@
+import PolicyLinks from "../components/legal/PolicyLinks";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useForgotPassword } from "../api/auth";
@@ -68,6 +69,7 @@ export default function ForgotPasswordPage() {
           </>
         )}
         <Link className="login-link" to="/">Back to sign in</Link>
+        <PolicyLinks />
       </form>
     </div>
   );

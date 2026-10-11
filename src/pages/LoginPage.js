@@ -1,3 +1,4 @@
+import PolicyLinks from "../components/legal/PolicyLinks";
 import { useState } from "react";
 import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import Button from "../components/ui/Button";
@@ -83,6 +84,7 @@ export default function LoginPage() {
         <Button type="submit" disabled={login.isPending}>
           {login.isPending ? "Signing in…" : "Sign in"}
         </Button>
+        <PolicyLinks />
       </form>
     </div>
   );

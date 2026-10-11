@@ -195,3 +195,47 @@ On phones, employee lists use cards, attendance and request history expand on de
 Create a shift by choosing a role and times, selecting an available employee, reviewing the details, and saving a draft. Publish week opens a readiness review before employee visibility changes. Schedule and Reports share a download dialog for PDF and native Excel (.xlsx) files.
 
 Run `npm run test:e2e -- e2e/mobile-usability.spec.js --workers=1` to check 320, 375, 430, 600, 768, and 1024px layouts, long names, loading/error states, modal focus, reduced-height editing, and downloaded file contents. These browser checks use mocked API data and do not write production records.
+
+## Website policies
+
+Public policy pages are available at `/policies/privacy`, `/policies/terms`,
+`/policies/storage`, and `/policies/retention`. Links appear on sign-in and password
+recovery forms; all roles can open Policies from desktop navigation or mobile More.
+These routes require no account and remain available to signed-in users.
+
+The content reflects browser local storage, optional push notifications, workforce
+records, reports, and employee soft deletion. It does not introduce tracking,
+automated erasure, a paid subscription agreement, or a consent/acceptance record.
+The privacy notice is information, rather than a blanket consent request.
+
+Elevizion Studio is the default legal operator name. Confirm its exact legal name
+and relationship to each employer before publication. Configure these public build
+values in `.env.local` or the build environment, then rebuild:
+
+```dotenv
+REACT_APP_LEGAL_BUSINESS_NAME=Elevizion Studio
+REACT_APP_LEGAL_ADDRESS=
+REACT_APP_PRIVACY_EMAIL=
+REACT_APP_PROCESSING_BASIS_SUMMARY=
+REACT_APP_DATA_PROCESSORS_SUMMARY=
+REACT_APP_DATA_RETENTION_SUMMARY=
+REACT_APP_POLICIES_PUBLISHED=false
+```
+
+The summaries must identify lawful processing grounds (including sensitive data
+where applicable), actual hosting/email/push providers, countries and transfer
+arrangements, and category-specific retention periods including backups and
+exports. Confirm operating jurisdictions and have the final wording reviewed by
+qualified counsel. Do not invent periods or promise protections not implemented.
+Pages show a draft notice until all disclosures are present and
+`REACT_APP_POLICIES_PUBLISHED=true`. The flag controls presentation only; it is
+not a compliance check. Increment `POLICY_VERSION` in `src/data/policies.js` and
+notify users when material policy changes require notice. Policies alone do not
+implement retention, rights-request handling, incident response, or provider
+agreements; the operator must establish those processes separately.
+
+If commercial subscriptions or optional tracking are added, implement appropriate
+contract/consent handling and update the policies before enabling those features.
+Reference guidance used in preparing these drafts:
+[Jamaica OIC data protection standards](https://oic.gov.jm/page/data-protection-standards)
+and [ICO privacy notices and cookies](https://ico.org.uk/for-organisations/advice-for-small-organisations/privacy-notices-and-cookies/cookies-and-privacy-notices-in-detail/).

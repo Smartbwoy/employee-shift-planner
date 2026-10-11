@@ -1,5 +1,6 @@
 import "./App.css";
 import { Navigate, Route, Routes } from "react-router-dom";
+import PoliciesPage from "./pages/PoliciesPage";
 import LoginPage from "./pages/LoginPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
@@ -27,6 +28,8 @@ const protectedPage = (page, roles = ALL_ROLES) => <RequireAuth roles={roles}>{p
 export default function App() {
   return (
     <Routes>
+      <Route path="/policies" element={<PoliciesPage />} />
+      <Route path="/policies/:policy" element={<PoliciesPage />} />
       <Route path="/" element={<LoginPage />} />
       <Route path="/login" element={<Navigate replace to="/" />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
