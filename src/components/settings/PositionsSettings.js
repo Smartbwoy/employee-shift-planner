@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useCreatePosition, usePositions } from "../../api/employees";
+import PositionDeletionDialog from "./PositionDeletionDialog";
 import Button from "../ui/Button";
 import StateMessage from "../ui/StateMessage";
 import "./PositionsSettings.css";
@@ -11,6 +12,8 @@ export default function PositionsSettings() {
   const createPosition = useCreatePosition();
   const [form, setForm] = useState(EMPTY_POSITION);
   const [createdTitle, setCreatedTitle] = useState("");
+  const [selectedPosition, setSelectedPosition] = useState(null);
+  const [deletedTitle, setDeletedTitle] = useState("");
 
   const update = (field) => (event) => {
     setForm((current) => ({ ...current, [field]: event.target.value }));
@@ -37,6 +40,8 @@ export default function PositionsSettings() {
         <p>Add the roles employees can be assigned to when building a schedule.</p>
       </div>
 
+      {deletedTitle ? <p role="status" className="position-success">{deletedTitle} was deleted. Assigned employees are now Unassigned.</p> : null}
+      {selectedPosition ? <PositionDeletionDialog position={selectedPosition} onClose={() => setSelectedPosition(null)} onDeleted={() => { setDeletedTitle(selectedPosition.title); setSelectedPosition(null); }} /> : null}
       <div className="positions-layout">
         <form className="card position-form" onSubmit={submit}>
           <h3>Add position</h3>
@@ -95,9 +100,12 @@ export default function PositionsSettings() {
                     <b>{position.title}</b>
                     {position.description ? <p>{position.description}</p> : null}
                   </div>
+                  <div className="position-list-actions">
                   <span className={position.isActive ? "active" : "inactive"}>
                     {position.isActive ? "Active" : "Inactive"}
                   </span>
+                  <Button tone="gray" aria-label={`Delete ${position.title}`} onClick={() => setSelectedPosition(position)}>Delete</Button>
+                  </div>
                 </li>
               ))}
             </ul>

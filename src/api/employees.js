@@ -128,3 +128,21 @@ export function useEmployeeDeletionPreview(employeeId) {
     staleTime: 0,
   });
 }
+
+export function usePositionDeletionPreview(positionId) {
+  return useQuery({
+    queryKey: ["positions", positionId, "deletion-preview"],
+    queryFn: () => get(`/Position/${positionId}/deletion-preview`),
+    enabled: Boolean(positionId),
+    staleTime: 0,
+    retry: false,
+  });
+}
+
+export function useDeletePosition() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: ({ positionId, assignedEmployees }) => del(`/Position/${positionId}${query({ expectedAssignedEmployees: assignedEmployees })}`),
+    onSuccess: () => ["positions", "employees", "schedule", "reports", "staffing-requirements"].forEach(key => client.invalidateQueries({ queryKey: [key] })),
+  });
+}
