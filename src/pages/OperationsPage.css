@@ -15,3 +15,5 @@
 .operations-table td small { display: block; margin-top: 4px; color: #697386; white-space: nowrap; }
 .operations-table td > button + button, .operations-table input + button { margin-left: 4px; }
 .operations-table button:disabled { color: #9aa4b2; cursor: not-allowed; }
+
+.operation-status.cancelled { color: var(--text-secondary); background: var(--surface-subtle); }

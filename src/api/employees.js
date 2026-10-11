@@ -110,11 +110,21 @@ export function useCurrentEmployee(options = {}) {
 export function useDeleteEmployee() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (employeeId) => del(`/Employee/${encodeURIComponent(employeeId)}`),
+    mutationFn: ({ employeeId, cancelFutureShifts }) => del(`/Employee/${encodeURIComponent(employeeId)}${query({ cancelFutureShifts })}`),
     onSuccess: () => {
-      ["employees", "availability", "reports", "schedule"].forEach((key) => {
+      ["employees", "availability", "reports", "schedule", "time-off", "operations", "notifications", "notification-history", "staffing-requirements", "users"].forEach((key) => {
         queryClient.invalidateQueries({ queryKey: [key] });
       });
     },
+  });
+}
+
+export function useEmployeeDeletionPreview(employeeId) {
+  return useQuery({
+    queryKey: ["employees", employeeId, "deletion-preview"],
+    queryFn: () => get(`/Employee/${encodeURIComponent(employeeId)}/deletion-preview`),
+    enabled: Boolean(employeeId),
+    retry: false,
+    staleTime: 0,
   });
 }
