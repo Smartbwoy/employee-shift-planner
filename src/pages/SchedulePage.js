@@ -11,6 +11,8 @@ import { useCoverageWarnings } from "../api/staffing";
 import { useStaffingRequirements } from "../api/staffing";
 import { useEmployees } from "../api/employees";
 import { useHolidays } from "../api/holidays";
+import { isAdministrator } from "../api/auth";
+import { downloadSchedule } from "../lib/scheduleExport";
 import {
   formatDayHeading,
   formatCurrencyCompact,
@@ -26,6 +28,9 @@ export default function SchedulePage() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedShift, setSelectedShift] = useState(null);
+  const [downloadFormat, setDownloadFormat] = useState("pdf");
+  const [downloading, setDownloading] = useState(false);
+  const [downloadError, setDownloadError] = useState("");
   const currentWeek = useMemo(() => startOfWeek(), []);
   const weekStart = useMemo(() => {
     const requested = fromDateParam(searchParams.get("week"));
@@ -62,6 +67,17 @@ export default function SchedulePage() {
   );
 
   const openReport = (focus) => navigate(`/reports?week=${toDateParam(weekStart)}#${focus}`);
+  const handleDownload = async () => {
+    setDownloading(true);
+    setDownloadError("");
+    try {
+      await downloadSchedule(downloadFormat, weekStart, shifts.data, employees.data);
+    } catch (error) {
+      setDownloadError(error.message || "Please try downloading again.");
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   return (
     <Shell
@@ -70,6 +86,14 @@ export default function SchedulePage() {
       copy={formatWeekRange(weekStart)}
       actions={
         <>
+          {isAdministrator() ? <div className="schedule-download">
+            <label htmlFor="schedule-download-format">Download type</label>
+            <select id="schedule-download-format" value={downloadFormat} onChange={event => setDownloadFormat(event.target.value)} disabled={downloading}>
+              <option value="pdf">PDF (.pdf)</option>
+              <option value="excel">Excel (.xlsx)</option>
+            </select>
+            <Button tone="gray" onClick={handleDownload} disabled={downloading || !shifts.isSuccess || !employees.isSuccess}>{downloading ? "Downloading…" : "Download schedule"}</Button>
+          </div> : null}
           <Button
             tone="success"
             disabled={!draftCount || readiness.isPending || !readiness.data?.isReady || publishWeek.isPending}
@@ -100,6 +124,7 @@ export default function SchedulePage() {
           Next →
         </Button>
       </nav>
+      {downloadError ? <StateMessage tone="error" title="Could not download the schedule" detail={downloadError} /> : null}
       <section className="schedule-summary card" aria-label="Current week scheduling summary">
         <div className="schedule-summary-heading"><b>Week at a glance</b><span>Operational signals for this schedule</span></div>
         <button type="button" onClick={() => openReport("coverage")}><strong>{report.data ? formatPercent(report.data.coveragePercent) : "—"}</strong><span>Coverage</span></button>
