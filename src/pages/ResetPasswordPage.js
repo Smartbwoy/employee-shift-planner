@@ -1,3 +1,4 @@
+import PolicyLinks from "../components/legal/PolicyLinks";
 import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useResetPassword } from "../api/auth";
@@ -99,6 +100,7 @@ export default function ResetPasswordPage() {
           </>
         )}
         <Link className="login-link" to="/">Back to sign in</Link>
+        <PolicyLinks />
       </form>
     </div>
   );

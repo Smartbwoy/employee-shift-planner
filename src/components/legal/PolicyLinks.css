@@ -1,0 +1,3 @@
+.policy-links { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-top: 20px; font-size: 12px; }
+.policy-links a { display: inline-flex; align-items: center; min-height: 44px; color: var(--blue, #2459cc); text-decoration: underline; text-underline-offset: 3px; }
+.policy-links a:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; border-radius: 3px; }

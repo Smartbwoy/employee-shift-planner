@@ -98,3 +98,36 @@ test("an invalid reset URL offers a new password reset link", () => {
     "/forgot-password"
   );
 });
+
+
+describe("public website policies", () => {
+  beforeEach(() => jest.spyOn(window, "scrollTo").mockImplementation(() => {}));
+
+  test.each([
+    ["privacy", "Privacy notice"],
+    ["terms", "Terms of use"],
+    ["storage", "Cookies and browser storage"],
+    ["retention", "Retention and deletion"],
+  ])("opens %s without authentication or API calls", (slug, title) => {
+    const request = jest.spyOn(global, "fetch");
+    renderAt(`/policies/${slug}`);
+    expect(screen.getByRole("heading", { level: 1, name: title })).toHaveFocus();
+    expect(screen.getByText("Elevizion Studio")).toBeInTheDocument();
+    expect(screen.getByLabelText("Publication status")).toHaveTextContent("Draft for review");
+    expect(request).not.toHaveBeenCalled();
+  });
+
+  test("policies remain accessible with a signed-in session", () => {
+    window.localStorage.setItem("token", "test-token");
+    window.localStorage.setItem("user", JSON.stringify({ role: "Employee" }));
+    renderAt("/policies/privacy");
+    expect(screen.getByRole("heading", { name: "Privacy notice" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Back to app/ })).toHaveAttribute("href", "/mobile");
+  });
+
+  test("sign-in exposes working policy links", () => {
+    renderAt("/");
+    fireEvent.click(screen.getByRole("link", { name: "Privacy" }));
+    expect(screen.getByRole("heading", { name: "Privacy notice" })).toBeInTheDocument();
+  });
+});
