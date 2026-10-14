@@ -4,8 +4,10 @@ import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import Button from "../components/ui/Button";
 import PasswordInput from "../components/ui/PasswordInput";
 import StateMessage from "../components/ui/StateMessage";
-import { homeForCurrentRole, isSignedIn, useLogin } from "../api/auth";
+import { currentUser, homeForCurrentRole, isSignedIn, useLogin } from "../api/auth";
 import "./LoginPage.css";
+
+const safeDestination = (path) => typeof path === "string" && path.startsWith("/") && !path.startsWith("//") && !path.includes("\\") && !Array.from(path).some(character => character.charCodeAt(0) <= 32) ? path : homeForCurrentRole();
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -15,7 +17,7 @@ export default function LoginPage() {
 
   // Already signed in? Go straight to wherever the guard bounced us from.
   if (isSignedIn()) {
-    return <Navigate replace to={location.state?.from ?? homeForCurrentRole()} />;
+    return <Navigate replace to={currentUser()?.mustChangePassword ? "/change-password" : safeDestination(location.state?.from)} />;
   }
 
   const update = (field) => (event) =>
@@ -24,7 +26,7 @@ export default function LoginPage() {
   const handleSubmit = (event) => {
     event.preventDefault();
     login.mutate(form, {
-      onSuccess: () => navigate(location.state?.from ?? homeForCurrentRole(), { replace: true }),
+      onSuccess: () => navigate(currentUser()?.mustChangePassword ? "/change-password" : safeDestination(location.state?.from), { replace: true }),
     });
   };
 

@@ -1,3 +1,4 @@
+import { storeSession } from "./api/client";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter } from "react-router-dom";
@@ -6,8 +7,7 @@ import OperationsPage from "./pages/OperationsPage";
 
 const response = body => Promise.resolve({ ok:true, status:200, text:() => Promise.resolve(JSON.stringify(body)) });
 const managerSession = () => {
-  localStorage.setItem("token", "test-token");
-  localStorage.setItem("user", JSON.stringify({ id:1, email:"manager@test.local", role:"Supervisor", employeeId:"E1" }));
+  storeSession("test-token", { id:1, email:"manager@test.local", role:"Supervisor", employeeId:"E1" });
 };
 const renderPage = page => render(<QueryClientProvider client={new QueryClient({ defaultOptions:{ queries:{ retry:false } } })}><MemoryRouter>{page}</MemoryRouter></QueryClientProvider>);
 

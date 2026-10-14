@@ -15,9 +15,9 @@ export const currentRole = () => {
 
 export const isManager = () => ["Administrator", "Supervisor"].includes(currentRole());
 export const isAdministrator = () => currentRole() === "Administrator";
-export const homeForCurrentRole = () => isManager() ? "/schedule" : "/mobile";
+export const homeForCurrentRole = () => currentUser()?.mustChangePassword ? "/change-password" : isManager() ? "/schedule" : "/mobile";
 
-/** Keeps route guards in sync with logout, another browser tab and JWT expiry. */
+/** Keeps route guards in sync with logout and JWT expiry. */
 export function useSession() {
   const [signedIn, setSignedIn] = useState(isSignedIn);
 
@@ -86,6 +86,8 @@ export function useResetPassword() {
 }
 
 export function signOut(queryClient) {
+  const revocation = post("/auth/logout").catch(() => { /* expires within 15 minutes if offline */ });
   clearSession();
   queryClient?.clear();
+  return revocation;
 }

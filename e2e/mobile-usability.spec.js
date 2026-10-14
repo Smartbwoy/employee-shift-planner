@@ -7,13 +7,10 @@ const shift = { id:10, employeeId:'E1', employeeName:name, startTime:'2026-10-12
 const report = { coveragePercent:100, totalHours:7.5, coverageGaps:0, labourCost:7500, regularHours:7.5, overtimeHours:0, currency:'JMD', regularLabourCost:7500, overtimeLabourCost:0, overtimeMultiplier:1.5, availabilityFitPercent:100, hoursByEmployee:[{ employeeId:'E1', fullName:name, hours:7.5 }], labourCostByEmployee:[{ employeeId:'E1', fullName:name, regularHours:7.5, overtimeHours:0, hourlyRate:1000, regularCost:7500, overtimeCost:0, totalCost:7500 }], coverageByDay:[{ day:'Monday', date:'2026-10-12', scheduledEmployees:1, requiredEmployees:1, hours:7.5, coveragePercent:100, isGap:false }] };
 async function setup(page, role = 'Administrator', schedule = [shift]) {
   await page.clock.install({ time:new Date('2026-10-12T12:00:00Z') });
-  await page.addInitScript(({ role }) => {
-    localStorage.setItem('token','test-token');
-    localStorage.setItem('user',JSON.stringify({ id:1, email:'test@example.com', role, employeeId:'E1' }));
-  }, { role });
   await page.route('**/api/**', route => {
     const request = route.request(); const path = new URL(request.url()).pathname.toLowerCase();
     const json = data => route.fulfill({ json:data });
+    if (path.endsWith('/auth/login')) return json({ token:'test-token', user:{ id:1, email:'test@example.com', role, employeeId:'E1' } });
     if (request.method() !== 'GET') return json({ id:55, copiedShifts:1 });
     if (path.includes('/schedule/week/readiness')) return json({ isReady:true, issues:[] });
     if (path.includes('/schedule/candidates')) return json([{ employeeId:'E1', fullName:name, status:'Available' }]);
@@ -29,6 +26,14 @@ async function setup(page, role = 'Administrator', schedule = [shift]) {
     return json([]);
   });
 }
+// Memory sessions intentionally end on document reload; sign in through the UI.
+async function gotoSignedIn(page, path) {
+  await page.goto(path);
+  await page.getByLabel('Email address').fill('test@example.com');
+  await page.locator('#password').fill('Temporary-123');
+  await page.getByRole('button', { name:'Sign in', exact:true }).click();
+  await expect(page.locator('main h1')).toBeVisible();
+}
 async function noOverflow(page) {
   const overflow = await page.evaluate(() => ({ scroll:document.documentElement.scrollWidth, viewport:window.innerWidth }));
   expect(overflow.scroll).toBeLessThanOrEqual(overflow.viewport + 1);
@@ -40,7 +45,7 @@ for (const width of [320,375,430,600,768,1024]) {
     await page.setViewportSize({ width, height:850 });
     await setup(page);
     for (const path of ['/schedule?week=2026-10-12','/employees','/create-shift?week=2026-10-12','/time-off','/operations','/reports?week=2026-10-12','/availability']) {
-      await page.goto(path);
+      await gotoSignedIn(page, path);
       await expect(page.locator('main h1')).toBeVisible();
       await expect(page.getByText('Fetching the latest data from the scheduler.')).toHaveCount(0);
       await test.step(`No overflow: ${path}`, () => noOverflow(page));
@@ -50,7 +55,7 @@ for (const width of [320,375,430,600,768,1024]) {
 
 test('mobile shift dialog stays above navigation, traps focus and restores it', async ({ page }) => {
   await page.setViewportSize({ width:375,height:750 }); await setup(page);
-  await page.goto('/schedule?week=2026-10-12');
+  await gotoSignedIn(page, '/schedule?week=2026-10-12');
   await page.getByRole('button', { name:new RegExp(name) }).click();
   const dialog = page.getByRole('dialog', { name:'Manage shift' });
   await expect(dialog).toBeVisible();
@@ -71,7 +76,7 @@ test('mobile shift dialog stays above navigation, traps focus and restores it', 
 test('employee home handles old shifts, swap requests and mobile navigation', async ({ page }) => {
   await page.setViewportSize({ width:320,height:750 });
   await setup(page,'Employee',[{ ...shift,isPublished:true }]);
-  await page.goto('/mobile');
+  await gotoSignedIn(page, '/mobile');
   await expect(page.getByRole('navigation', { name:'Primary navigation' })).toBeVisible();
   await page.getByRole('button', { name:'Request swap' }).click();
   await page.getByLabel('Reason').fill('Family appointment');
@@ -88,7 +93,7 @@ test('employee home handles old shifts, swap requests and mobile navigation', as
 
 test('create and publish require reviews and report downloads contain real files', async ({ page }, testInfo) => {
   await page.setViewportSize({ width:375,height:850 }); await setup(page);
-  await page.goto('/create-shift?week=2026-10-12');
+  await gotoSignedIn(page, '/create-shift?week=2026-10-12');
   await expect(page.getByRole('button', { name:'Review shift', exact:true })).toBeDisabled();
   await page.getByRole('combobox', { name:'Role', exact:true }).selectOption('Server');
   await page.getByRole('radio').check();
@@ -99,7 +104,7 @@ test('create and publish require reviews and report downloads contain real files
   await page.getByRole('button', { name:/Publish week/ }).click();
   await expect(page.getByRole('dialog', { name:'Review before publishing' })).toBeVisible();
   await page.getByRole('button', { name:'Back to schedule' }).click();
-  await page.goto('/reports?week=2026-10-12');
+  await gotoSignedIn(page, '/reports?week=2026-10-12');
   await page.getByRole('button', { name:'Download report', exact:true }).click();
   await page.getByLabel('File format').selectOption('excel');
   const excelDownload = page.waitForEvent('download');
@@ -122,7 +127,7 @@ test('employee home distinguishes slow loading, empty schedules and failures', a
   let release;
   const gate = new Promise(resolve => { release=resolve; });
   await page.route('**/api/Schedule?*', async route => { await gate; await route.fulfill({ json:[] }); });
-  await page.goto('/mobile');
+  await gotoSignedIn(page, '/mobile');
   await expect(page.getByText('Loading your schedule…', { exact:true })).toBeVisible();
   await expect(page.getByText('No upcoming shifts', { exact:true })).toHaveCount(0);
   release();
@@ -135,7 +140,7 @@ test('employee home distinguishes slow loading, empty schedules and failures', a
 
 test('reduced-height mobile editing keeps review actions accessible and blocks conflicting publication', async ({ page }, testInfo) => {
   await page.setViewportSize({ width:375,height:850 }); await setup(page);
-  await page.goto('/create-shift?week=2026-10-12');
+  await gotoSignedIn(page, '/create-shift?week=2026-10-12');
   await page.getByRole('combobox', { name:'Role', exact:true }).selectOption('Server');
   await page.getByRole('radio').check();
   await page.setViewportSize({ width:375,height:430 });
@@ -146,7 +151,7 @@ test('reduced-height mobile editing keeps review actions accessible and blocks c
   await page.getByRole('button', { name:'Back to editing', exact:true }).click();
   await page.route('**/api/Schedule/week/readiness?*', route => route.fulfill({ json:{ isReady:false,issues:[{ shiftId:10,errors:['Employee unavailable'] }] } }));
   await page.setViewportSize({ width:375,height:850 });
-  await page.goto('/schedule?week=2026-10-12');
+  await gotoSignedIn(page, '/schedule?week=2026-10-12');
   await page.screenshot({ path:testInfo.outputPath('schedule-mobile.png'),fullPage:true });
   await page.getByRole('button', { name:/Publish week/ }).click();
   await expect(page.getByRole('dialog').getByRole('button', { name:'Publish week',exact:true })).toBeDisabled();

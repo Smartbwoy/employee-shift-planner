@@ -239,3 +239,21 @@ contract/consent handling and update the policies before enabling those features
 Reference guidance used in preparing these drafts:
 [Jamaica OIC data protection standards](https://oic.gov.jm/page/data-protection-standards)
 and [ICO privacy notices and cookies](https://ico.org.uk/for-organisations/advice-for-small-organisations/privacy-notices-and-cookies/cookies-and-privacy-notices-in-detail/).
+
+### Security configuration
+
+Access tokens stay in memory and expire after 15 minutes. Reloading requires a new
+sign-in. Newly created accounts must visit `/change-password` before continuing;
+all users can reach this page through the sidebar. Password changes require the
+current password and end all existing sessions. Logout also revokes all account
+sessions when the API is reachable.
+
+The production CSP in `public/staticwebapp.config.json` allows connections to the
+production Scheduler API. If deploying with another `REACT_APP_API_BASE_URL`, add
+that API's origin to `connect-src` before building. Script execution is limited to
+same-origin scripts; inline styles remain allowed for React's existing UI styles.
+
+Both repository workflows validate master pushes before deployment. The frontend
+uploads the tested `build` directory. Actions use immutable commit pins, with
+weekly Dependabot updates and CodeQL analysis. Private repositories may require
+GitHub Code Security to upload CodeQL results.

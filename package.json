@@ -13,7 +13,7 @@
     "lucide-react": "^0.468.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-router-dom": "6.21.3",
+    "react-router-dom": "7.18.4",
     "react-scripts": "5.0.1",
     "web-vitals": "2.1.4"
   },
@@ -81,5 +81,10 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.55.0"
+  },
+  "jest": {
+    "moduleNameMapper": {
+      "^react-router/dom$": "<rootDir>/node_modules/react-router/dist/development/dom-export.js"
+    }
   }
 }

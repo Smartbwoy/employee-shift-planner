@@ -24,7 +24,7 @@ export default function UserAccessSettings() {
   const duplicateApiError = create.error && /already exists|duplicate/i.test(create.error.message);
   const emailError = duplicateUser || duplicateApiError ? "An account with this email already exists." : "";
   const linkedEmployeeIds = new Set(existingUsers.map((user) => user.employeeId).filter(Boolean));
-  const formIsValid = normalizedEmail && form.password.length >= 6 && (form.role !== "Employee" || form.employeeId) && !emailError;
+  const formIsValid = normalizedEmail && form.password.length >= 8 && (form.role !== "Employee" || form.employeeId) && !emailError;
 
   const updateForm = (changes) => {
     setForm((value) => ({ ...value, ...changes }));
@@ -44,7 +44,7 @@ export default function UserAccessSettings() {
   };
 
   const setAccess = (user, changes) => update.mutate({ ...user, ...changes }, {
-    onSuccess: () => setMessage("User access updated. Changes apply at the user's next sign-in."),
+    onSuccess: () => setMessage("User access updated. Changes apply to the user's next API request."),
   });
 
   const toggleAccess = (user) => {
@@ -83,8 +83,8 @@ export default function UserAccessSettings() {
             {emailError ? <span id="user-email-error" className="field-error" role="alert">{emailError}</span> : null}
           </label>
           <label htmlFor="temporary-password">Temporary password
-            <PasswordInput id="temporary-password" required minLength="6" autoComplete="new-password" value={form.password} onChange={(event) => updateForm({ password: event.target.value })} />
-            <span className="field-help">Use at least 6 characters. The user can change it after signing in.</span>
+            <PasswordInput id="temporary-password" required minLength="8" autoComplete="new-password" value={form.password} onChange={(event) => updateForm({ password: event.target.value })} />
+            <span className="field-help">Use at least 8 characters. The user must change it after signing in.</span>
           </label>
           <label htmlFor="new-user-role">Role
             <select id="new-user-role" value={form.role} onChange={(event) => updateForm({ role: event.target.value })}>{ROLES.map((role) => <option key={role}>{role}</option>)}</select>

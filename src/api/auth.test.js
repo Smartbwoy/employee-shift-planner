@@ -24,3 +24,10 @@ test("an active JWT remains available", () => {
   expect(getToken()).toBe(token);
   expect(getStoredUser().email).toBe("active@example.com");
 });
+
+test("access credentials are never persisted in browser storage", () => {
+  storeSession(jwt(Date.now() + 60_000), { email: "active@example.com" });
+  expect(localStorage.getItem("token")).toBeNull();
+  expect(localStorage.getItem("user")).toBeNull();
+  expect(sessionStorage.getItem("token")).toBeNull();
+});
