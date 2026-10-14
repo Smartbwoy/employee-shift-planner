@@ -1,5 +1,5 @@
 import PolicyLinks from "../components/legal/PolicyLinks";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useResetPassword } from "../api/auth";
 import Button from "../components/ui/Button";
@@ -8,10 +8,20 @@ import StateMessage from "../components/ui/StateMessage";
 import "./LoginPage.css";
 
 export default function ResetPasswordPage() {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const resetPassword = useResetPassword();
-  const email = searchParams.get("email") ?? "";
-  const token = searchParams.get("token") ?? "";
+  // Keep credentials in component memory while replacing the sensitive URL.
+  const [{ email, token }] = useState(() => ({
+    email: searchParams.get("email") ?? "",
+    token: searchParams.get("token") ?? "",
+  }));
+  useEffect(() => {
+    if (!searchParams.has("email") && !searchParams.has("token")) return;
+    const clean = new URLSearchParams(searchParams);
+    clean.delete("email");
+    clean.delete("token");
+    setSearchParams(clean, { replace: true });
+  }, [searchParams, setSearchParams]);
   const hasResetLink = Boolean(email && token);
   const [form, setForm] = useState({ password: "", confirmation: "" });
   const [validationError, setValidationError] = useState("");

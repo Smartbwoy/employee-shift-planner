@@ -3,11 +3,9 @@
 // The base URL comes from REACT_APP_API_BASE_URL so local, staging and
 // production builds can point at different hosts without a code change.
 
-const DEFAULT_BASE_URL = "https://scheduler-api-h2d8bfatb6f2bnhg.centralus-01.azurewebsites.net/api";
-//const DEFAULT_BASE_URL = "http://localhost:5113/api" // Uncomment this line for local development;
-
+// Missing configuration stays on the current origin; never silently use production.
 export const API_BASE_URL = (
-  process.env.REACT_APP_API_BASE_URL || DEFAULT_BASE_URL
+  process.env.REACT_APP_API_BASE_URL || "/api"
 ).replace(/\/+$/, "");
 
 export class ApiError extends Error {
@@ -115,11 +113,17 @@ const parse = (text) => {
 };
 
 /** Pull the most useful message out of an ASP.NET error payload. */
-const messageFor = (payload, status) => {
+const messageFor = (payload, status, path) => {
+  if (status === 429) return "Too many attempts. Please wait a minute and try again.";
+  if (status === 423) return "Sign-in is temporarily unavailable. Try again later or contact your administrator.";
+  if (path === "/auth/login") {
+    if (status === 400 || status === 401 || status === 403) return "Invalid email or password.";
+    return "Could not sign in. Please try again later.";
+  }
+  if (status >= 500) return "The scheduler service is temporarily unavailable. Please try again later.";
   if (typeof payload === "string" && payload.trim()) return payload;
-  const reference = payload?.traceId ? ` Reference: ${payload.traceId}` : "";
-  if (payload?.message) return `${payload.message}${reference}`;
-  if (payload?.title) return `${payload.title}${reference}`;
+  if (payload?.message) return payload.message;
+  if (payload?.title) return payload.title;
   if (payload?.errors) {
     const first = Object.values(payload.errors).flat()[0];
     if (first) return first;
@@ -158,8 +162,8 @@ export async function request(path, options = {}) {
   const payload = parse(await response.text());
 
   if (!response.ok) {
-    if (response.status === 401) clearSession();
-    throw new ApiError(messageFor(payload, response.status), response.status, payload);
+    if (auth && response.status === 401) clearSession();
+    throw new ApiError(messageFor(payload, response.status, path), response.status, payload);
   }
 
   return payload;
