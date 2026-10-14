@@ -1,7 +1,7 @@
 import { clearSession, storeSession } from "./api/client";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter, useLocation } from "react-router-dom";
 import App from "./App";
 
 const renderAt = (path) => {
@@ -182,4 +182,13 @@ test.each([false, true])("login ignores stale password-change destinations unles
     await screen.findByRole("heading", { name: /Hi, / });
     expect(screen.queryByRole("heading", { name: "Change password" })).not.toBeInTheDocument();
   }
+});
+
+
+test("reset credentials are stripped while unrelated parameters and the reset form remain", async () => {
+  function LocationProbe() { const location = useLocation(); return <output data-testid="reset-location">{location.pathname}{location.search}</output>; }
+  render(<QueryClientProvider client={new QueryClient()}><MemoryRouter initialEntries={["/reset-password?email=employee%40example.com&token=secret&source=email"]}><App /><LocationProbe /></MemoryRouter></QueryClientProvider>);
+  await waitFor(() => expect(screen.getByTestId("reset-location")).toHaveTextContent("/reset-password?source=email"));
+  expect(screen.getByTestId("reset-location")).not.toHaveTextContent("secret");
+  expect(screen.getByLabelText("New password")).toBeInTheDocument();
 });

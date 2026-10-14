@@ -1,3 +1,12 @@
+const safeNotificationUrl = (value) => {
+  const fallback = new URL("/mobile", self.location.origin).href;
+  try {
+    const url = new URL(typeof value === "string" ? value : "/mobile", self.location.origin);
+    return url.origin === self.location.origin && ["https:", "http:"].includes(url.protocol)
+      ? url.href : fallback;
+  } catch { return fallback; }
+};
+
 self.addEventListener("push", (event) => {
   let message = {};
   try { message = event.data?.json() ?? {}; } catch { message = { body: event.data?.text() }; }
@@ -5,14 +14,14 @@ self.addEventListener("push", (event) => {
     body: message.body || "You have a new schedule notification.",
     icon: "/logo192.png",
     badge: "/favicon-32.png",
-    data: { url: message.url || "/mobile" },
+    data: { url: safeNotificationUrl(message.url) },
     tag: message.tag || "shiftly-notification",
   }));
 });
 
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
-  const target = new URL(event.notification.data?.url || "/mobile", self.location.origin).href;
+  const target = safeNotificationUrl(event.notification.data?.url);
   event.waitUntil(clients.matchAll({ type: "window", includeUncontrolled: true }).then((windows) => {
     const existing = windows.find((client) => client.url === target);
     return existing ? existing.focus() : clients.openWindow(target);

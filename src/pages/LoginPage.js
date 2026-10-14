@@ -87,6 +87,7 @@ export default function LoginPage() {
         <Button type="submit" disabled={login.isPending}>
           {login.isPending ? "Signing in…" : "Sign in"}
         </Button>
+        <p className="login-security-note">Too many sign-in attempts temporarily limit access. If you cannot sign in, contact your administrator.</p>
         <PolicyLinks />
       </form>
     </div>

@@ -257,3 +257,11 @@ Both repository workflows validate master pushes before deployment. The frontend
 uploads the tested `build` directory. Actions use immutable commit pins, with
 weekly Dependabot updates and CodeQL analysis. Private repositories may require
 GitHub Code Security to upload CodeQL results.
+
+The API base URL defaults to same-origin `/api`. For local development, copy
+`.env.example` to `.env.local` and set `REACT_APP_API_BASE_URL`. Azure CI explicitly
+sets the production API URL when building; unconfigured local builds do not use
+production. Reset credentials stay in component memory after the URL is replaced;
+reloading that page requires reopening the reset email. Login errors omit internal
+diagnostics. Administrator settings explicitly identify password-only sign-in;
+MFA enrollment, challenges, and recovery are not implemented.

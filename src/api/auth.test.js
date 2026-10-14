@@ -31,3 +31,22 @@ test("access credentials are never persisted in browser storage", () => {
   expect(localStorage.getItem("user")).toBeNull();
   expect(sessionStorage.getItem("token")).toBeNull();
 });
+
+test.each([401, 403, 500])("login errors never expose server diagnostics (%s)", async (status) => {
+  const { post } = require("./client");
+  jest.spyOn(global, "fetch").mockResolvedValue({ ok: false, status, text: async () => JSON.stringify({ message: "Database secret failure", traceId: "private-trace" }) });
+  try {
+    await post("/auth/login", {}, { auth: false });
+    throw new Error("Expected rejection");
+  } catch (error) {
+    expect(error.message).not.toMatch(/Database|private-trace/);
+    expect(error.message).toBe(status === 500 ? "Could not sign in. Please try again later." : "Invalid email or password.");
+  } finally { jest.restoreAllMocks(); }
+});
+
+test("rate-limited sign-in tells users to wait", async () => {
+  const { post } = require("./client");
+  jest.spyOn(global, "fetch").mockResolvedValue({ ok: false, status: 429, text: async () => "Internal limiter details" });
+  await expect(post("/auth/login", {}, { auth: false })).rejects.toThrow("Too many attempts. Please wait a minute and try again.");
+  jest.restoreAllMocks();
+});

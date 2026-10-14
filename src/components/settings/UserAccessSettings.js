@@ -69,6 +69,7 @@ export default function UserAccessSettings() {
       <header className="user-access-heading">
         <h2 id="user-access-heading">Users &amp; access</h2>
         <p>Control who can manage the workforce and who has employee-only access.</p>
+        <p>Administrator accounts currently use password-only sign-in. Multi-factor authentication is not configured.</p>
       </header>
       {error ? <div className="user-access-alert"><StateMessage tone="error" title="Could not manage user access" detail={error.message} /></div> : null}
       {message ? <p className="user-access-message" role="status">{message}</p> : null}

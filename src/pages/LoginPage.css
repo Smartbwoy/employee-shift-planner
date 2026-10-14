@@ -149,3 +149,5 @@
     justify-content: center;
   }
 }
+
+.login form > .login-security-note { margin: 16px 0 0; font-size: 12px; line-height: 1.5; }

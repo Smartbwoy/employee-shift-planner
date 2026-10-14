@@ -35,6 +35,8 @@ jobs:
       - name: Run tests
         run: npm test -- --watchAll=false
       - name: Build frontend
+        env:
+          REACT_APP_API_BASE_URL: https://scheduler-api-h2d8bfatb6f2bnhg.centralus-01.azurewebsites.net/api
         run: npm run build
       - name: Verify deployment token
         if: github.event_name != 'pull_request'
