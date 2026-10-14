@@ -24,24 +24,17 @@ const USER_KEY = "user";
 const EXPIRES_KEY = "sessionExpiresAt";
 export const SESSION_CHANGED_EVENT = "shiftly:session-changed";
 
-// localStorage throws in private-mode Safari and in some embedded webviews, so
-// every access is guarded.
-const safeRead = (key) => {
-  try {
-    return window.localStorage.getItem(key);
-  } catch {
-    return null;
-  }
-};
-
+// Access credentials live only in memory. Reloading requires a new sign-in.
+const session = new Map();
+const safeRead = (key) => session.get(key) ?? null;
 const safeWrite = (key, value) => {
-  try {
-    if (value === null) window.localStorage.removeItem(key);
-    else window.localStorage.setItem(key, value);
-  } catch {
-    /* storage unavailable — the session simply won't survive a reload */
-  }
+  if (value === null) session.delete(key);
+  else session.set(key, value);
 };
+// Remove credentials persisted by older versions without adopting them.
+try {
+  [TOKEN_KEY, USER_KEY, EXPIRES_KEY].forEach(key => window.localStorage.removeItem(key));
+} catch { /* storage unavailable */ }
 
 const tokenExpiration = (token) => {
   try {
@@ -96,15 +89,8 @@ export const storeSession = (token, user) => {
 export const clearSession = () => storeSession(null, null);
 
 export const subscribeToSession = (listener) => {
-  const onStorage = (event) => {
-    if ([TOKEN_KEY, USER_KEY, EXPIRES_KEY].includes(event.key)) listener();
-  };
   window.addEventListener(SESSION_CHANGED_EVENT, listener);
-  window.addEventListener("storage", onStorage);
-  return () => {
-    window.removeEventListener(SESSION_CHANGED_EVENT, listener);
-    window.removeEventListener("storage", onStorage);
-  };
+  return () => window.removeEventListener(SESSION_CHANGED_EVENT, listener);
 };
 
 /** Build a query string from defined values only. */

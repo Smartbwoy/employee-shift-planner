@@ -1,5 +1,5 @@
 import { Navigate, useLocation } from "react-router-dom";
-import { currentRole, homeForCurrentRole, useSession } from "../../api/auth";
+import { currentUser, currentRole, homeForCurrentRole, useSession } from "../../api/auth";
 
 /**
  * Authentication and role-aware UX gate for planner screens. The API mirrors
@@ -11,6 +11,10 @@ export default function RequireAuth({ children, roles }) {
 
   if (!signedIn) {
     return <Navigate replace to="/" state={{ from: `${location.pathname}${location.search}` }} />;
+  }
+
+  if (currentUser()?.mustChangePassword && location.pathname !== "/change-password") {
+    return <Navigate replace to="/change-password" />;
   }
 
   if (roles && !roles.includes(currentRole())) {

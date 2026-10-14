@@ -58,6 +58,7 @@ export default function Sidebar({ active }) {
       </nav>
       <div className="sidebar-session">
         <strong>{currentUserLabel()}<small>{currentRole()}</small></strong>
+        <Link to="/change-password">Change password</Link>
         <button type="button" onClick={logout}>Log out</button>
       </div>
       <nav className="mobile-nav" aria-label="Primary navigation">
@@ -66,7 +67,7 @@ export default function Sidebar({ active }) {
       </nav>
       {moreOpen && mobile ? <Modal id="mobile-more-menu" className="mobile-more-menu" aria-label="More navigation" onClose={() => setMoreOpen(false)}>
         <div className="mobile-more-heading"><div><b>{currentUserLabel()}</b><span>{currentRole()}</span></div><button type="button" aria-label="Close more menu" onClick={() => setMoreOpen(false)}>×</button></div>
-        <nav>{secondary.map(navLink)}</nav>
+        <nav>{secondary.map(navLink)}<Link to="/change-password" onClick={() => setMoreOpen(false)}>Change password</Link></nav>
         <button type="button" className="mobile-logout" onClick={logout}><NavIcon name="logout" />Log out</button>
       </Modal> : null}
     </aside>

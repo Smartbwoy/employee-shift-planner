@@ -1,3 +1,4 @@
+import { clearSession, storeSession } from "./api/client";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter } from "react-router-dom";
@@ -14,7 +15,7 @@ const renderAt = (path) => {
   );
 };
 
-beforeEach(() => window.localStorage.clear());
+beforeEach(() => { window.localStorage.clear(); clearSession(); });
 afterEach(() => jest.restoreAllMocks());
 
 test("the root renders the API-backed sign-in screen", () => {
@@ -118,8 +119,7 @@ describe("public website policies", () => {
   });
 
   test("policies remain accessible with a signed-in session", () => {
-    window.localStorage.setItem("token", "test-token");
-    window.localStorage.setItem("user", JSON.stringify({ role: "Employee" }));
+    storeSession("test-token", { role: "Employee" });
     renderAt("/policies/privacy");
     expect(screen.getByRole("heading", { name: "Privacy notice" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /Back to app/ })).toHaveAttribute("href", "/mobile");
@@ -130,4 +130,27 @@ describe("public website policies", () => {
     fireEvent.click(screen.getByRole("link", { name: "Privacy" }));
     expect(screen.getByRole("heading", { name: "Privacy notice" })).toBeInTheDocument();
   });
+});
+
+test("temporary credentials require a password change before accessing protected pages", () => {
+  storeSession("test-token", { role: "Administrator", mustChangePassword: true });
+  renderAt("/schedule");
+  expect(screen.getByRole("heading", { name: "Change password" })).toBeInTheDocument();
+  expect(screen.getByText("You must replace your temporary password before continuing.")).toBeInTheDocument();
+});
+
+test("changing a password requires confirmation and clears the session", async () => {
+  storeSession("test-token", { role: "Employee", mustChangePassword: true });
+  jest.spyOn(global, "fetch").mockResolvedValue({ ok: true, status: 200, text: async () => "" });
+  renderAt("/change-password");
+  fireEvent.change(screen.getByLabelText("Current password"), { target: { value: "Temporary-123" } });
+  fireEvent.change(screen.getByLabelText("New password"), { target: { value: "New-password-123" } });
+  fireEvent.change(screen.getByLabelText("Confirm new password"), { target: { value: "Different-123" } });
+  fireEvent.click(screen.getByRole("button", { name: "Update password" }));
+  expect(screen.getByRole("alert")).toHaveTextContent("Passwords do not match.");
+  expect(global.fetch).not.toHaveBeenCalled();
+  fireEvent.change(screen.getByLabelText("Confirm new password"), { target: { value: "New-password-123" } });
+  fireEvent.click(screen.getByRole("button", { name: "Update password" }));
+  await screen.findByRole("heading", { name: "Welcome back" });
+  expect(JSON.parse(global.fetch.mock.calls[0][1].body)).toEqual({ currentPassword: "Temporary-123", password: "New-password-123" });
 });

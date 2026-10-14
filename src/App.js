@@ -3,6 +3,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import PoliciesPage from "./pages/PoliciesPage";
 import LoginPage from "./pages/LoginPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import ChangePasswordPage from "./pages/ChangePasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import SchedulePage from "./pages/SchedulePage";
 import CreateShiftPage from "./pages/CreateShiftPage";
@@ -35,6 +36,7 @@ export default function App() {
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route path="/reset-password" element={<ResetPasswordPage />} />
 
+      <Route path="/change-password" element={protectedPage(<ChangePasswordPage />)} />
       <Route path="/schedule" element={protectedPage(<SchedulePage />, MANAGERS)} />
       <Route path="/shiftplanner" element={<Navigate replace to="/schedule" />} />
       <Route path="/create-shift" element={protectedPage(<CreateShiftPage />, MANAGERS)} />
