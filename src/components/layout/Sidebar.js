@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
-import { BarChart3, Bell, BriefcaseBusiness, CalendarDays, Clock3, LogOut, MoreHorizontal, Settings, Users } from "lucide-react";
+import { BarChart3, Bell, BriefcaseBusiness, CalendarDays, Clock3, KeyRound, LogOut, MoreHorizontal, Settings, Users } from "lucide-react";
 import Modal from "../ui/Modal";
 import useIsMobile from "../../lib/useIsMobile";
 import { NAV_ITEMS } from "../../data/navigation";
@@ -10,7 +10,7 @@ import shiftlyIcon from "../../assets/shiftly-icon.png";
 import { disablePushNotifications } from "../../lib/pushNotifications";
 import "./Sidebar.css";
 
-const ICONS = { calendar: CalendarDays, users: Users, clock: Clock3, briefcase: BriefcaseBusiness, chart: BarChart3, bell: Bell, settings: Settings, more: MoreHorizontal, logout: LogOut };
+const ICONS = { calendar: CalendarDays, users: Users, clock: Clock3, briefcase: BriefcaseBusiness, chart: BarChart3, bell: Bell, settings: Settings, more: MoreHorizontal, logout: LogOut, password: KeyRound };
 const NavIcon = ({ name }) => { const Component = ICONS[name] ?? BriefcaseBusiness; return <Component size={20} strokeWidth={1.8} aria-hidden="true" />; };
 
 /**
@@ -55,10 +55,10 @@ export default function Sidebar({ active }) {
       </div>
       <nav className="desktop-nav">
         {items.map(navLink)}
+        {navLink({ label: "Change password", path: "/change-password", icon: "password" })}
       </nav>
       <div className="sidebar-session">
         <strong>{currentUserLabel()}<small>{currentRole()}</small></strong>
-        <Link to="/change-password">Change password</Link>
         <button type="button" onClick={logout}>Log out</button>
       </div>
       <nav className="mobile-nav" aria-label="Primary navigation">
@@ -67,7 +67,7 @@ export default function Sidebar({ active }) {
       </nav>
       {moreOpen && mobile ? <Modal id="mobile-more-menu" className="mobile-more-menu" aria-label="More navigation" onClose={() => setMoreOpen(false)}>
         <div className="mobile-more-heading"><div><b>{currentUserLabel()}</b><span>{currentRole()}</span></div><button type="button" aria-label="Close more menu" onClick={() => setMoreOpen(false)}>×</button></div>
-        <nav>{secondary.map(navLink)}<Link to="/change-password" onClick={() => setMoreOpen(false)}>Change password</Link></nav>
+        <nav>{secondary.map(navLink)}{navLink({ label: "Change password", path: "/change-password", icon: "password" })}</nav>
         <button type="button" className="mobile-logout" onClick={logout}><NavIcon name="logout" />Log out</button>
       </Modal> : null}
     </aside>

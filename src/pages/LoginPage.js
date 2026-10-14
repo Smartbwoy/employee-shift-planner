@@ -7,13 +7,13 @@ import StateMessage from "../components/ui/StateMessage";
 import { currentUser, homeForCurrentRole, isSignedIn, useLogin } from "../api/auth";
 import "./LoginPage.css";
 
-const safeDestination = (path) => typeof path === "string" && path.startsWith("/") && !path.startsWith("//") && !path.includes("\\") && !Array.from(path).some(character => character.charCodeAt(0) <= 32) ? path : homeForCurrentRole();
+const safeDestination = (path) => typeof path === "string" && path.startsWith("/") && !path.startsWith("//") && path.split(/[?#]/)[0].replace(/\/+$/, "").toLowerCase() !== "/change-password" && !path.includes("\\") && !Array.from(path).some(character => character.charCodeAt(0) <= 32) ? path : homeForCurrentRole();
 
 export default function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const login = useLogin();
-  const [form, setForm] = useState({ email: "", password: "" });
+  const [form, setForm] = useState({ email: location.state?.email ?? "", password: "" });
 
   // Already signed in? Go straight to wherever the guard bounced us from.
   if (isSignedIn()) {
@@ -49,6 +49,7 @@ export default function LoginPage() {
       <form onSubmit={handleSubmit}>
         <h2>Welcome back</h2>
         <p>Sign in to manage schedules and your team.</p>
+        {location.state?.passwordChanged ? <StateMessage title="Password updated" detail="Sign in with your new password to continue." /> : null}
         <label htmlFor="email">
           Email address
           <input

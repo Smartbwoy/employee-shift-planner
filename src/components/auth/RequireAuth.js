@@ -10,7 +10,7 @@ export default function RequireAuth({ children, roles }) {
   const signedIn = useSession();
 
   if (!signedIn) {
-    return <Navigate replace to="/" state={{ from: `${location.pathname}${location.search}` }} />;
+    return <Navigate replace to="/" state={location.pathname === "/change-password" ? undefined : { from: `${location.pathname}${location.search}` }} />;
   }
 
   if (currentUser()?.mustChangePassword && location.pathname !== "/change-password") {

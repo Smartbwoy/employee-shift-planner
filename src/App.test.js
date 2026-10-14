@@ -153,4 +153,33 @@ test("changing a password requires confirmation and clears the session", async (
   fireEvent.click(screen.getByRole("button", { name: "Update password" }));
   await screen.findByRole("heading", { name: "Welcome back" });
   expect(JSON.parse(global.fetch.mock.calls[0][1].body)).toEqual({ currentPassword: "Temporary-123", password: "New-password-123" });
+  expect(screen.getByText("Sign in with your new password to continue.")).toBeInTheDocument();
+  global.fetch.mockImplementation((url) => Promise.resolve({
+    ok: true, status: 200, text: async () => JSON.stringify(String(url).endsWith('/auth/login')
+      ? { token: "new-token", user: { role: "Employee", mustChangePassword: false } }
+      : {}),
+  }));
+  fireEvent.change(screen.getByLabelText("Email address"), { target: { value: "employee@example.com" } });
+  fireEvent.change(document.querySelector('#password'), { target: { value: "New-password-123" } });
+  fireEvent.click(screen.getByRole("button", { name: "Sign in", exact: true }));
+  await screen.findByRole("heading", { name: /Hi, / });
+  expect(screen.queryByRole("heading", { name: "Change password" })).not.toBeInTheDocument();
+});
+
+test.each([false, true])("login ignores stale password-change destinations unless the account requires it (%s)", async (mustChangePassword) => {
+  jest.spyOn(global, "fetch").mockImplementation((url) => Promise.resolve({
+    ok: true, status: 200, text: async () => JSON.stringify(String(url).endsWith('/auth/login')
+      ? { token: "test-token", user: { role: "Employee", mustChangePassword } }
+      : {}),
+  }));
+  renderAt({ pathname: "/", state: { from: "/change-password?previous=true" } });
+  fireEvent.change(screen.getByLabelText("Email address"), { target: { value: "employee@example.com" } });
+  fireEvent.change(document.querySelector('#password'), { target: { value: "New-password-123" } });
+  fireEvent.click(screen.getByRole("button", { name: "Sign in", exact: true }));
+  if (mustChangePassword) {
+    await screen.findByRole("heading", { name: "Change password" });
+  } else {
+    await screen.findByRole("heading", { name: /Hi, / });
+    expect(screen.queryByRole("heading", { name: "Change password" })).not.toBeInTheDocument();
+  }
 });
