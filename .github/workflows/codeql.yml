@@ -12,6 +12,7 @@ jobs:
   analyze:
     runs-on: ubuntu-latest
     permissions:
+      actions: read # CodeQL reads workflow-run metadata when processing SARIF.
       contents: read
       security-events: write
     steps:
