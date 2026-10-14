@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
+import PolicyLinks from "../components/legal/PolicyLinks";
 import Shell from "../components/layout/Shell";
 import Button from "../components/ui/Button";
 import NotificationRules from "../components/notifications/NotificationRules";
@@ -36,6 +37,7 @@ const SETTINGS_SECTIONS = [
   { id: "staffing", label: "Staffing", detail: "Coverage requirements" },
   { id: "positions", label: "Positions", detail: "Schedule roles" },
   { id: "holidays", label: "Holidays", detail: "Closures and public holidays" },
+  { id: "policies", label: "Policies", detail: "Privacy, terms and browser storage" },
   { id: "notifications", label: "Notifications", detail: "Rules and delivery history" },
   { id: "access", label: "Users & access", detail: "Accounts and permissions", administratorOnly: true },
 ];
@@ -96,6 +98,12 @@ export default function NotificationsPage({ variant = "notifications" }) {
 
   const settingsContent = {
     organization: <OrganizationSettings />,
+    policies: <section className="card settings-policies" aria-labelledby="settings-policies-heading">
+      <h2 id="settings-policies-heading">Website policies</h2>
+      <p>Read our privacy notice, terms, browser storage information and retention policy.</p>
+      <Link to="/policies">View all policies</Link>
+      <PolicyLinks />
+    </section>,
     staffing: <StaffingRequirementsSettings />,
     positions: <PositionsSettings />,
     holidays: <HolidaySettings />,
