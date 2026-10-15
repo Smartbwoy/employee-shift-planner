@@ -1,3 +1,4 @@
+import Skeleton from "./Skeleton";
 import "./StateMessage.css";
 
 /**
@@ -7,6 +8,7 @@ import "./StateMessage.css";
  * `tone` is "" (neutral) or "error".
  */
 export default function StateMessage({ title, detail, tone = "", action }) {
+  if (!tone && /^(Loading|Checking|Fetching)/i.test(title)) return <Skeleton label={title} />;
   return (
     <section className={`card state ${tone}`.trim()} role={tone === "error" ? "alert" : "status"}>
       <b>{title}</b>
@@ -19,7 +21,7 @@ export default function StateMessage({ title, detail, tone = "", action }) {
 /** Convenience wrapper for the common query states. */
 export function QueryState({ query: result, empty, children }) {
   if (result.isPending) {
-    return <StateMessage title="Loading…" detail="Fetching the latest data from the scheduler." />;
+    return <Skeleton label="Fetching the latest data from the scheduler." />;
   }
 
   if (result.isError) {

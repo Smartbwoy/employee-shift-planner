@@ -1,0 +1,8 @@
+.skeleton { padding: 24px; }
+.skeleton-label { display: block; margin-bottom: 16px; color: var(--text-secondary); }
+.skeleton i { display: block; height: 16px; margin: 12px 0; border-radius: 6px; background: var(--border, #e2e8f0); animation: skeleton-pulse 1.4s ease-in-out infinite alternate; }
+.skeleton i:last-child { width: 65%; }
+@keyframes skeleton-pulse { to { opacity: .4; } }
+@media (prefers-reduced-motion: reduce) { .skeleton i { animation: none; } }
+.recovery-page { max-width: 680px; margin: 64px auto; padding: 20px; }
+.recovery-page > section { padding: 28px; }

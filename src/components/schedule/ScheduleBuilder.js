@@ -1,3 +1,4 @@
+import tabKeyboard from "../../lib/tabKeyboard";
 import { useEffect, useMemo, useState } from "react";
 import Button from "../ui/Button";
 import StateMessage from "../ui/StateMessage";
@@ -83,7 +84,7 @@ export default function ScheduleBuilder({ shifts, employees, requirements, weekS
 
   return <section className="schedule-builder">
     <div className="schedule-toolbar card">
-      <div className="view-tabs" role="tablist">{VIEWS.map(item => <button key={item} role="tab" aria-selected={view === item} onClick={() => setView(item)}>{item} view</button>)}</div>
+      <div className="view-tabs" role="tablist" aria-label="Schedule views">{VIEWS.map((item, index) => <button key={item} id={`view-tab-${item}`} role="tab" aria-controls="schedule-view-panel" tabIndex={view === item ? 0 : -1} aria-selected={view === item} onKeyDown={event => tabKeyboard(event, index, VIEWS.length, next => setView(VIEWS[next]))} onClick={() => setView(item)}>{item} view</button>)}</div>
       <Button tone="gray" className="mobile-filter-toggle" aria-expanded={filtersOpen} aria-controls="schedule-filter-fields" onClick={() => setFiltersOpen(value => !value)}>Filters{filterCount ? ` (${filterCount})` : ""}</Button>
       <div id="schedule-filter-fields" className={`schedule-filters${filtersOpen ? " open" : ""}`}>
         <label>Employee<input value={employeeFilter} onChange={e => setEmployeeFilter(e.target.value)} placeholder="Search employees" /></label>
@@ -95,21 +96,23 @@ export default function ScheduleBuilder({ shifts, employees, requirements, weekS
 
     {selected.length ? <div className="bulk-toolbar card" role="region" aria-label="Bulk shift actions">
       <b>{selected.length} selected</b>
-      <input value={bulk.role} onChange={e => setBulk(x => ({ ...x, role:e.target.value }))} placeholder="Department/role" />
-      <input value={bulk.requiredSkill} onChange={e => setBulk(x => ({ ...x, requiredSkill:e.target.value }))} placeholder="Required skill" />
-      <input type="number" min="0" max="240" value={bulk.breakMinutes} onChange={e => setBulk(x => ({ ...x, breakMinutes:e.target.value }))} placeholder="Break min" />
+      <label>Department / role<input aria-label="Bulk department or role" value={bulk.role} onChange={e => setBulk(x => ({ ...x, role:e.target.value }))} placeholder="Department/role" /></label>
+      <label>Required skill<input aria-label="Bulk required skill" value={bulk.requiredSkill} onChange={e => setBulk(x => ({ ...x, requiredSkill:e.target.value }))} placeholder="Required skill" /></label>
+      <label>Break minutes<input aria-label="Bulk break minutes" type="number" min="0" max="240" value={bulk.breakMinutes} onChange={e => setBulk(x => ({ ...x, breakMinutes:e.target.value }))} placeholder="Break min" /></label>
       <Button disabled={busy} onClick={applyBulk}>{update.isPending ? "Saving…" : "Apply bulk edit"}</Button>
       <Button tone="gray" disabled={busy} onClick={duplicate}>{create.isPending ? "Duplicating…" : "Duplicate"}</Button>
       <select aria-label="Fill or reassign employee" value={fillEmployee} disabled={!fillShift || fillCandidates.isPending} onChange={e => setFillEmployee(e.target.value)}><option value="">{fillCandidates.isPending ? "Checking eligibility…" : "Choose eligible employee"}</option>{(fillCandidates.data ?? []).filter(x => x.status === "Available" && x.employeeId !== fillShift?.employeeId).map(x => <option value={x.employeeId} key={x.employeeId}>{x.fullName}</option>)}</select>
-      <Button tone="success" disabled={busy || !fillShift || !fillEmployee} onClick={fill}>Fill open shift</Button>
+      <Button tone="success" disabled={busy || !fillShift || !fillEmployee} onClick={fill}>Reassign selected shift</Button>
       <button className="clear-selection" onClick={() => setSelected([])}>Clear</button>
     </div> : null}
     {undo ? <div className="undo-bar" role="status"><span>{message || "Schedule updated."}</span><Button tone="gray" disabled={busy} onClick={undoLast}>Undo</Button></div> : message ? <div className="undo-bar" role="status">{message}</div> : null}
     {(update.isError || create.isError || cancel.isError) ? <StateMessage tone="error" title="Schedule change was not saved" detail={(update.error ?? create.error ?? cancel.error)?.message} /> : null}
 
+    <div id="schedule-view-panel" role="tabpanel" aria-labelledby={`view-tab-${view}`} tabIndex={0}>
     {view === "Employee" ? <EmployeeView employees={filteredEmployees} shifts={filteredShifts} days={days} weekStart={weekStart} selected={selected} toggle={toggle} open={onOpenShift} reassign={reassign} busy={busy} /> : null}
     {view === "Position" ? <PositionView shifts={filteredShifts} selected={selected} toggle={toggle} open={onOpenShift} /> : null}
     {view === "Coverage" ? <CoverageView shifts={filteredShifts} requirements={requirements} employees={employeeById} weekStart={weekStart} days={days} positionFilter={positionFilter} /> : null}
+    </div>
   </section>;
 }
 
@@ -117,6 +120,7 @@ function ShiftCell({ shift, selected, toggle, open }) {
   return <div className={`planner-shift${selected ? " selected" : ""}`} draggable onDragStart={event => event.dataTransfer.setData("text/shift-id", String(shift.id))}>
     <input type="checkbox" checked={selected} onChange={() => toggle(shift.id)} aria-label={`Select ${shift.employeeName} ${formatShiftRange(shift.startTime, shift.endTime)}`} />
     <button onClick={() => open(shift)}><b>{formatShiftRange(shift.startTime, shift.endTime)}</b><span>{shift.role || "Shift"}</span></button>
+    <button className="shift-reassign" onClick={() => open({ ...shift, focusAssignment: true })} aria-label={`Reassign shift for ${shift.employeeName}`}>Reassign</button>
   </div>;
 }
 
@@ -135,14 +139,17 @@ function MobileEmployeeView({ employees, shifts, days, weekStart, open }) {
   const dayShifts = shifts.filter(shift => dayIndex(shift.startTime, weekStart) === day).sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
   const moveDay = direction => setDay(value => Math.max(0, Math.min(6, value + direction)));
   return <section className="mobile-planner" aria-label="Daily schedule">
-    <div className="mobile-day-tabs" role="tablist" aria-label="Choose schedule day">{days.map((label, index) => <button key={label} role="tab" aria-selected={day === index} onClick={() => setDay(index)}><span>{label.split(" ")[0]}</span><b>{label.match(/\d+/)?.[0] ?? index + 1}</b></button>)}</div>
+    <div className="mobile-day-tabs" role="tablist" aria-label="Choose schedule day">{days.map((label, index) => <button key={label} id={`day-tab-${index}`} role="tab" aria-controls="mobile-day-panel" tabIndex={day === index ? 0 : -1} aria-selected={day === index} onKeyDown={event => tabKeyboard(event, index, days.length, setDay)} onClick={() => setDay(index)}><span>{label.split(" ")[0]}</span><b>{label.match(/\d+/)?.[0] ?? index + 1}</b></button>)}</div>
+    <div id="mobile-day-panel" role="tabpanel" aria-labelledby={`day-tab-${day}`} tabIndex={0}>
     <div className="mobile-day-heading"><button disabled={day === 0} onClick={() => moveDay(-1)} aria-label="Previous day">←</button><div><b>{days[day]}</b><span>{dayShifts.length} {dayShifts.length === 1 ? "shift" : "shifts"}</span></div><button disabled={day === 6} onClick={() => moveDay(1)} aria-label="Next day">→</button></div>
-    <div className="mobile-shift-list">{dayShifts.length ? dayShifts.map(shift => { const employee = employeeById[shift.employeeId]; const initials = (employee?.fullName || shift.employeeName || "Open shift").split(" ").map(part => part[0]).slice(0, 2).join(""); return <button className="mobile-shift-card" key={shift.id} onClick={() => open(shift)}><span className="mobile-shift-avatar">{initials}</span><span className="mobile-shift-copy"><b>{employee?.fullName || shift.employeeName || "Open shift"}</b><small>{shift.role || employee?.positionTitle || "Shift"}</small><strong>{formatShiftRange(shift.startTime, shift.endTime)}</strong></span><span className={`mobile-shift-status ${shift.isPublished ? "published" : "draft"}`}>{shift.isPublished ? "Published" : "Draft"}</span><span className="mobile-shift-chevron" aria-hidden="true">›</span></button>; }) : <div className="mobile-schedule-empty"><b>No shifts scheduled</b><span>This day is clear. Choose another day to continue.</span></div>}</div>
+    <div className="mobile-shift-list">{dayShifts.length ? dayShifts.map(shift => { const employee = employeeById[shift.employeeId]; const initials = (employee?.fullName || shift.employeeName || "Open shift").split(" ").map(part => part[0]).slice(0, 2).join(""); return <button className="mobile-shift-card" key={shift.id} onClick={() => open(shift)}><span className="mobile-shift-avatar">{initials}</span><span className="mobile-shift-copy"><b>{employee?.fullName || shift.employeeName || "Open shift"}</b><small>{shift.role || employee?.positionTitle || "Shift"}</small><strong>{formatShiftRange(shift.startTime, shift.endTime)}</strong><span className="mobile-shift-action">Edit or reassign</span></span><span className={`mobile-shift-status ${shift.isPublished ? "published" : "draft"}`}>{shift.isPublished ? "Published" : "Draft"}</span><span className="mobile-shift-chevron" aria-hidden="true">›</span></button>; }) : <div className="mobile-schedule-empty"><b>No shifts scheduled</b><span>This day is clear. Choose another day to continue.</span></div>}</div>
+    </div>
   </section>;
 }
 
 function PositionView({ shifts, selected, toggle, open }) {
   const groups = Object.entries(shifts.reduce((all, shift) => { const key=shift.role || "Unassigned"; (all[key] ||= []).push(shift); return all; }, {})).sort();
+  if (!groups.length) return <StateMessage title="No shifts match these filters" detail="Clear the filters or create a shift to start planning." />;
   return <div className="position-view">{groups.map(([position, items]) => <section className="card" key={position}><h2>{position}</h2>{items.sort((a,b) => new Date(a.startTime)-new Date(b.startTime)).map(shift => <ShiftCell key={shift.id} shift={shift} selected={selected.includes(shift.id)} toggle={toggle} open={open} />)}</section>)}</div>;
 }
 

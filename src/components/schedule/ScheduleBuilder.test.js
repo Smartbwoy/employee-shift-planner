@@ -44,3 +44,21 @@ test("supports selection, duplication, and drag reassignment", async () => {
   fireEvent.drop(target, { dataTransfer:transfer });
   await waitFor(() => expect(mockUpdateAsync).toHaveBeenCalledWith(expect.objectContaining({ id:10, employeeId:"E2" })));
 });
+
+test("view tabs support arrow keys and connect to the active panel", () => {
+  render(<ScheduleBuilder shifts={shifts} employees={employees} requirements={[]} weekStart={weekStart} days={days} onOpenShift={() => {}} />);
+  const employee = screen.getByRole("tab", { name: "Employee view" });
+  employee.focus();
+  fireEvent.keyDown(employee, { key: "ArrowRight" });
+  const position = screen.getByRole("tab", { name: "Position view" });
+  expect(position).toHaveFocus();
+  expect(position).toHaveAttribute("aria-selected", "true");
+  expect(document.getElementById(position.getAttribute("aria-controls"))).toHaveAttribute("role", "tabpanel");
+});
+
+test("reassignment is available as a button without dragging", () => {
+  const open = jest.fn();
+  render(<ScheduleBuilder shifts={shifts} employees={employees} requirements={[]} weekStart={weekStart} days={days} onOpenShift={open} />);
+  fireEvent.click(screen.getByRole("button", { name: "Reassign shift for John Brown" }));
+  expect(open).toHaveBeenCalledWith(expect.objectContaining({ id: 10, focusAssignment: true }));
+});

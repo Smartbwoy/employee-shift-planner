@@ -1,3 +1,4 @@
+import { useConfirm } from "../ui/ConfirmProvider";
 import { useState } from "react";
 import {
   useCreateShiftTemplate,
@@ -21,6 +22,7 @@ const dateAt = (weekStart, dayOffset, time) => {
 };
 
 export default function ShiftTemplateTools({ shift, weekStart, onApply }) {
+  const confirm = useConfirm();
   const templates = useShiftTemplates();
   const createTemplate = useCreateShiftTemplate();
   const deleteTemplate = useDeleteShiftTemplate();
@@ -72,8 +74,8 @@ export default function ShiftTemplateTools({ shift, weekStart, onApply }) {
     });
   };
 
-  const remove = () => {
-    if (!selected || !window.confirm(`Delete the “${selected.name}” template?`)) return;
+  const remove = async () => {
+    if (!selected || !(await confirm(`Delete the “${selected.name}” template?`, "Delete template"))) return;
     deleteTemplate.mutate(selected.id, {
       onSuccess: () => {
         setSelectedId("");

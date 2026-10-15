@@ -31,11 +31,11 @@
 .schedule-summary { display: grid; grid-template-columns: minmax(165px,1.2fr) repeat(4,minmax(100px,.7fr)) auto; align-items: stretch; margin: 0 0 20px; overflow: hidden; }
 .schedule-summary-heading { padding: 15px 18px; display: grid; align-content: center; gap: 2px; border-right: 1px solid var(--border); }
 .schedule-summary-heading b { font-size: 13px; }
-.schedule-summary-heading span { color: var(--text-secondary); font-size: 10px; }
+.schedule-summary-heading span { color: var(--text-secondary); font-size: 12px; }
 .schedule-summary > button { min-width: 0; padding: 12px 14px; display: grid; align-content: center; gap: 2px; border: 0; border-right: 1px solid var(--border); background: transparent; color: var(--text); cursor: pointer; text-align: left; }
 .schedule-summary > button:hover { background: var(--surface-subtle); }
 .schedule-summary > button strong { font-size: 16px; }
-.schedule-summary > button span { color: var(--text-secondary); font-size: 10px; white-space: nowrap; }
+.schedule-summary > button span { color: var(--text-secondary); font-size: 12px; white-space: nowrap; }
 .schedule-summary > button.needs-attention strong { color: var(--danger); }
 .schedule-summary .schedule-summary-report { padding-inline: 16px; grid-template-columns: auto auto; align-items: center; gap: 8px; border-right: 0; color: var(--primary); }
 .schedule-summary .schedule-summary-report span { color: inherit; font-weight: 700; }

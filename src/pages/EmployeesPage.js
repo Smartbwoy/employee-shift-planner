@@ -1,3 +1,4 @@
+import useRecordList from "../lib/useRecordList";
 import Shell from "../components/layout/Shell";
 import Button from "../components/ui/Button";
 import { QueryState } from "../components/ui/StateMessage";
@@ -8,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 export default function EmployeesPage() {
   const roster = useRoster();
   const navigate = useNavigate();
+  const list = useRecordList(roster.data, "employees", item => `${item.fullName} ${item.positionTitle ?? ""} ${item.employeeId}`, item => item.fullName);
 
   return (
     <Shell
@@ -23,7 +25,7 @@ export default function EmployeesPage() {
           detail: "Add your first team member to start building schedules.",
         }}
       >
-        {(rows) => <EmployeeTable employees={rows} />}
+        {() => <>{list.controls}{list.rows.length ? <EmployeeTable employees={list.rows} /> : <p role="status">No employees match your search.</p>}</>}
       </QueryState>
     </Shell>
   );

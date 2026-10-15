@@ -1,3 +1,4 @@
+import { useConfirm } from "../ui/ConfirmProvider";
 import { useState } from "react";
 import { usePositions } from "../../api/employees";
 import {
@@ -15,6 +16,7 @@ const EMPTY = { dayOfWeek: "Monday", startTime: "08:00", endTime: "17:00", posit
 const displayTime = (value) => String(value).slice(0, 5);
 
 export default function StaffingRequirementsSettings() {
+  const confirm = useConfirm();
   const requirements = useStaffingRequirements();
   const positions = usePositions();
   const create = useCreateStaffingRequirement();
@@ -39,8 +41,8 @@ export default function StaffingRequirementsSettings() {
     isActive: !item.isActive,
   }, { onSuccess: () => setMessage(`Requirement ${item.isActive ? "paused" : "activated"}.`) });
 
-  const deleteItem = (item) => {
-    if (!window.confirm(`Delete the ${item.dayOfWeek} ${item.positionTitle} requirement?`)) return;
+  const deleteItem = async (item) => {
+    if (!(await confirm(`Delete the ${item.dayOfWeek} ${item.positionTitle} requirement?`, "Delete requirement"))) return;
     remove.mutate(item.id, { onSuccess: () => setMessage("Staffing requirement deleted.") });
   };
 

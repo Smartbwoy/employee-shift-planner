@@ -57,7 +57,7 @@
 .position-character-count {
   justify-self: end;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 400;
 }
 
@@ -103,7 +103,7 @@
   flex: none;
   border-radius: 999px;
   padding: 4px 8px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
 }
 

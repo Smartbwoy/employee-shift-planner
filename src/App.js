@@ -1,5 +1,10 @@
+import { useEffect } from "react";
+import ConfirmProvider from "./components/ui/ConfirmProvider";
+import ErrorBoundary from "./components/feedback/ErrorBoundary";
+import { UnsavedChangesProvider } from "./lib/useUnsavedChanges";
+import NotFoundPage from "./pages/NotFoundPage";
 import "./App.css";
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import PoliciesPage from "./pages/PoliciesPage";
 import LoginPage from "./pages/LoginPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
@@ -27,7 +32,15 @@ const protectedPage = (page, roles = ALL_ROLES) => <RequireAuth roles={roles}>{p
  * shared components in src/components.
  */
 export default function App() {
+  const location = useLocation();
+  useEffect(() => {
+    if (location.pathname.startsWith("/policies")) return;
+    const titles = { "/": "Sign in", "/schedule": "Schedule", "/create-shift": "Create shift", "/employees": "Employees", "/employees/new": "Add employee", "/availability": "Availability", "/time-off": "Time off", "/reports": "Reports", "/notifications": "Notifications", "/settings": "Settings", "/mobile": "My schedule", "/operations": "Operations", "/change-password": "Change password", "/forgot-password": "Forgot password", "/reset-password": "Reset password" };
+    const title = titles[location.pathname] || (location.pathname.startsWith("/employees/") ? (location.pathname.endsWith("/edit") ? "Edit employee" : "Employee details") : "Page not found");
+    document.title = `${title} | Shiftly`;
+  }, [location.pathname]);
   return (
+    <ErrorBoundary key={location.pathname}><ConfirmProvider><UnsavedChangesProvider>
     <Routes>
       <Route path="/policies" element={<PoliciesPage />} />
       <Route path="/policies/:policy" element={<PoliciesPage />} />
@@ -55,7 +68,8 @@ export default function App() {
       <Route path="/mobile" element={protectedPage(<MobilePage />)} />
       <Route path="/operations" element={protectedPage(<OperationsPage />)} />
 
-      <Route path="*" element={<Navigate replace to="/" />} />
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
+    </UnsavedChangesProvider></ConfirmProvider></ErrorBoundary>
   );
 }

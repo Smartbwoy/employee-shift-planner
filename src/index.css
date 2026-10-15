@@ -9,3 +9,15 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.session-warning { position: sticky; top: 0; z-index: 125; padding: 12px 24px; background: #fff4d6; color: #674800; border-bottom: 1px solid #e5c46a; font-size: 14px; }
+
+.record-controls { display: flex; flex-wrap: wrap; align-items: end; gap: 12px; margin: 16px 0; }
+.record-controls label { display: grid; gap: 6px; font-size: 13px; }
+.record-controls input, .record-controls select { min-width: 0; max-width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; font: inherit; }
+.record-controls > span { align-self: center; font-size: 13px; color: var(--text-secondary); }
+.shift-reassign { min-height: 32px; font-size: 12px; }
+@media (max-width: 700px) { .record-controls label { width: 100%; } }
+
+[aria-invalid="true"] { border-color: var(--danger) !important; }
+.field-error { color: var(--danger); font-size: 13px; }

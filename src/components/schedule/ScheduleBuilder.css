@@ -4,7 +4,7 @@
 .view-tabs button, .coverage-day-tabs button { border: 0; border-radius: 8px; padding: 9px 14px; background: #edf1f7; color: var(--muted); font-weight: 700; cursor: pointer; }
 .view-tabs button[aria-selected="true"], .coverage-day-tabs button.active { background: var(--blue); color: white; }
 .schedule-filters { display: grid; grid-template-columns: 1fr 220px 220px; gap: 12px; }
-.schedule-filters label { display: grid; gap: 5px; font-size: 11px; font-weight: 700; color: var(--muted); }
+.schedule-filters label { display: grid; gap: 5px; font-size: 12px; font-weight: 700; color: var(--muted); }
 .schedule-filters input, .schedule-filters select, .bulk-toolbar input, .bulk-toolbar select { border: 1px solid #dbe1eb; border-radius: 8px; padding: 9px; background: white; }
 .bulk-toolbar { position: sticky; z-index: 10; top: 8px; display: flex; flex-wrap: wrap; align-items: center; gap: 9px; padding: 12px 16px; box-shadow: 0 8px 24px #1e293b1a; }
 .bulk-toolbar input { width: 145px; }.clear-selection { border: 0; background: none; color: var(--muted); font-weight: 700; }
@@ -12,12 +12,12 @@
 .planner-grid { min-width: 1080px; overflow: hidden; padding: 0; }
 .planner-grid-row { display: grid; grid-template-columns: 180px repeat(7, minmax(125px, 1fr)); border-top: 1px solid #edf0f5; }
 .planner-grid-row > * { min-width: 0; padding: 10px; border-left: 1px solid #edf0f5; }
-.planner-grid-row > *:first-child { border-left: 0; }.planner-grid-head { position: sticky; top: 0; background: #f8fafc; color: var(--muted); font-size: 11px; }
+.planner-grid-row > *:first-child { border-left: 0; }.planner-grid-head { position: sticky; top: 0; background: #f8fafc; color: var(--muted); font-size: 12px; }
 .planner-grid-row > strong small { display: block; margin-top: 4px; color: var(--muted); font-weight: 400; }
-.planner-day-cell { min-height: 68px; }.off { display: block; padding-top: 13px; text-align: center; color: #9aa4b2; font-size: 11px; }
+.planner-day-cell { min-height: 68px; }.off { display: block; padding-top: 13px; text-align: center; color: #9aa4b2; font-size: 12px; }
 .planner-shift { display: flex; align-items: start; gap: 4px; margin-bottom: 5px; border: 1px solid #dbe7fb; border-radius: 7px; padding: 5px; background: #eff6ff; }
 .planner-shift.selected { outline: 2px solid var(--blue); }.planner-shift > button { min-width: 0; border: 0; background: none; text-align: left; cursor: pointer; }
-.planner-shift b, .planner-shift span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 10px; }.planner-shift span { color: var(--muted); }
+.planner-shift b, .planner-shift span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; }.planner-shift span { color: var(--muted); }
 .position-view { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }.position-view > section { padding: 18px; }.position-view h2 { margin-top: 0; text-transform: uppercase; }
 .coverage-view { padding: 18px; }.coverage-day-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px; }.coverage-scroll { overflow-x: auto; }
 .coverage-view table { width: 100%; min-width: 1000px; border-collapse: collapse; text-align: center; }.coverage-view th, .coverage-view td { padding: 12px 8px; border: 1px solid #edf0f5; }.coverage-view td.gap { background: #ffebeb; color: var(--red); font-weight: 800; }.coverage-view td small { display: block; font-size: 8px; }
@@ -32,13 +32,13 @@
   .mobile-planner { display: block; }
   .mobile-day-tabs { display: grid; grid-template-columns: repeat(7,1fr); gap: 3px; padding: 8px 12px; overflow-x: auto; background: var(--surface); border-block: 1px solid var(--border); }
   .mobile-day-tabs button { min-width: 42px; min-height: 54px; display: grid; place-items: center; gap: 1px; border: 0; border-radius: 10px; background: transparent; color: var(--text-secondary); font: inherit; }
-  .mobile-day-tabs button span { font-size: 9px; font-weight: 700; text-transform: uppercase; }
+  .mobile-day-tabs button span { font-size: 12px; font-weight: 700; text-transform: uppercase; }
   .mobile-day-tabs button b { font-size: 14px; }
   .mobile-day-tabs button[aria-selected="true"] { background: var(--primary); color: #fff; box-shadow: 0 4px 12px rgba(37,99,235,.22); }
   .mobile-day-heading { padding: 18px 16px 12px; display: grid; grid-template-columns: 36px 1fr 36px; align-items: center; text-align: center; }
   .mobile-day-heading div { display: grid; gap: 2px; }
   .mobile-day-heading div b { font-size: 15px; }
-  .mobile-day-heading div span { color: var(--text-secondary); font-size: 11px; }
+  .mobile-day-heading div span { color: var(--text-secondary); font-size: 12px; }
   .mobile-day-heading > button { width: 36px; height: 36px; border: 1px solid var(--border); border-radius: 9px; background: var(--surface); color: var(--text); }
   .mobile-day-heading > button:disabled { opacity: .35; }
   .mobile-shift-list { display: grid; gap: 10px; padding: 0 16px 12px; }
@@ -47,9 +47,9 @@
   .mobile-shift-copy { min-width: 0; display: grid; gap: 2px; }
   .mobile-shift-copy b, .mobile-shift-copy small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .mobile-shift-copy b { color: var(--text); font-size: 13px; }
-  .mobile-shift-copy small { color: var(--text-secondary); font-size: 11px; }
+  .mobile-shift-copy small { color: var(--text-secondary); font-size: 12px; }
   .mobile-shift-copy strong { margin-top: 3px; color: var(--text); font-size: 12px; }
-  .mobile-shift-status { padding: 4px 7px; border-radius: 999px; font-size: 9px; font-weight: 800; }
+  .mobile-shift-status { padding: 4px 7px; border-radius: 999px; font-size: 12px; font-weight: 800; }
   .mobile-shift-status.published { background: #e8f7ef; color: #13734f; }
   .mobile-shift-status.draft { background: #fff3d6; color: #916000; }
   .mobile-shift-chevron { color: #94a3b8; font-size: 22px; }
@@ -80,3 +80,9 @@
 .schedule-builder > * { min-width: 0; }
 .mobile-planner { min-width: 0; max-width: 100%; }
 @media (max-width: 700px) { .mobile-day-tabs { grid-template-columns: repeat(7, minmax(44px, 1fr)); } }
+
+.planner-shift { flex-wrap: wrap; }
+.planner-shift > button:not(.shift-reassign) { flex: 1; }
+.planner-shift > .shift-reassign { flex-basis: 100%; margin-left: 18px; color: var(--primary); font-weight: 600; }
+.bulk-toolbar label { display: grid; gap: 5px; font-size: 12px; }
+.mobile-shift-action { display: block; font-size: 12px; color: var(--primary); }
