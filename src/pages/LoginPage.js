@@ -49,6 +49,7 @@ export default function LoginPage() {
       <form onSubmit={handleSubmit}>
         <h2>Welcome back</h2>
         <p>Sign in to manage schedules and your team.</p>
+        {location.state?.sessionExpired ? <StateMessage title="Your session expired" detail="Sign in again to continue." /> : null}
         {location.state?.passwordChanged ? <StateMessage title="Password updated" detail="Sign in with your new password to continue." /> : null}
         <label htmlFor="email">
           Email address

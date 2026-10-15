@@ -1,3 +1,4 @@
+import { useConfirm } from "../components/ui/ConfirmProvider";
 import { useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Shell from "../components/layout/Shell";
@@ -26,6 +27,7 @@ import { addWeeks, fromDateParam } from "../utils/week";
 import "./SchedulePage.css";
 
 export default function SchedulePage() {
+  const confirm = useConfirm();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedShift, setSelectedShift] = useState(null);
@@ -85,7 +87,7 @@ export default function SchedulePage() {
           <Button
             tone="gray"
             disabled={copyWeek.isPending}
-            onClick={() => window.confirm(`Copy shifts from ${formatWeekRange(addWeeks(weekStart, -1))} into this week as drafts?`) && copyWeek.mutate()}
+            onClick={async () => { if (await confirm(`Copy shifts from ${formatWeekRange(addWeeks(weekStart, -1))} into this week as drafts?`, "Copy week")) copyWeek.mutate(); }}
           >
             {copyWeek.isPending ? "Copying…" : "Copy previous week"}
           </Button>

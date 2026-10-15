@@ -1,3 +1,5 @@
+import useUnsavedChanges from "../../lib/useUnsavedChanges";
+import { useConfirm } from "../ui/ConfirmProvider";
 import { useMemo, useState } from "react";
 import {
   useCancelShift,
@@ -35,7 +37,15 @@ const moveOneWeek = (value) => {
 };
 
 export default function ShiftManagerDialog({ shift, onClose }) {
+  const confirm = useConfirm();
   const [draft, setDraft] = useState(() => initialDraft(shift));
+  const dirty = JSON.stringify(draft) !== JSON.stringify(initialDraft(shift));
+  const markSaved = useUnsavedChanges(dirty);
+  const close = async () => {
+    if (dirty && !(await confirm("Discard your unsaved shift changes?", "Discard changes", "Keep editing"))) return;
+    markSaved();
+    onClose();
+  };
   const [message, setMessage] = useState("");
   const updateShift = useUpdateShift();
   const cancelShift = useCancelShift();
@@ -71,7 +81,7 @@ export default function ShiftManagerDialog({ shift, onClose }) {
     event.preventDefault();
     updateShift.mutate(
       { ...draft, breakMinutes: Number(draft.breakMinutes) },
-      { onSuccess: onClose }
+      { onSuccess: () => { markSaved(); onClose(); } }
     );
   };
 
@@ -85,15 +95,15 @@ export default function ShiftManagerDialog({ shift, onClose }) {
     }, { onSuccess: () => setMessage("Shift copied to the same time next week.") });
   };
 
-  const cancel = () => {
-    if (!window.confirm("Cancel this shift? It will be removed from the schedule.")) return;
-    cancelShift.mutate(shift.id, { onSuccess: onClose });
+  const cancel = async () => {
+    if (!(await confirm("Cancel this shift? It will be removed from the schedule.", "Cancel shift"))) return;
+    cancelShift.mutate(shift.id, { onSuccess: () => { markSaved(); onClose(); } });
   };
 
   const error = updateShift.error ?? copyShift.error ?? cancelShift.error;
 
   return (
-    <Modal className="shift-dialog" busy={busy} onClose={onClose} aria-labelledby="shift-dialog-title">
+    <Modal className="shift-dialog" busy={busy} onClose={close} aria-labelledby="shift-dialog-title">
         <div className="shift-dialog-heading">
           <div>
             <h2 id="shift-dialog-title">Manage shift</h2>
@@ -102,7 +112,7 @@ export default function ShiftManagerDialog({ shift, onClose }) {
               {shift.isPublished ? "Published" : "Draft"}
             </span>
           </div>
-          <button className="shift-dialog-close" type="button" onClick={onClose} disabled={busy} aria-label="Close shift details">×</button>
+          <button className="shift-dialog-close" type="button" onClick={close} disabled={busy} aria-label="Close shift details">×</button>
         </div>
 
         <form onSubmit={save}>
@@ -110,7 +120,7 @@ export default function ShiftManagerDialog({ shift, onClose }) {
             <label>Role<select required value={draft.role} onChange={update("role")}><option value="">Select position</option>{roleOptions.map(role => <option key={role}>{role}</option>)}</select></label>
             <label>
               Assigned employee
-              <select value={draft.employeeId} onChange={update("employeeId")} disabled={candidates.isPending}>
+              <select autoFocus={Boolean(shift.focusAssignment)} value={draft.employeeId} onChange={update("employeeId")} disabled={candidates.isPending}>
                 {employeeOptions.map((candidate) => (
                   <option
                     key={candidate.employeeId}

@@ -2,7 +2,7 @@
 .sidebar-brand { display: flex; align-items: center; gap: 11px; margin: 0 10px 28px; }
 .sidebar-brand img { width: 38px; height: 38px; border-radius: 11px; flex: 0 0 auto; }
 .sidebar-brand b { display: block; font-size: 20px; letter-spacing: -.02em; }
-.sidebar-brand small { display: block; margin-top: 2px; color: #8493ad; font-size: 9px; letter-spacing: .04em; }
+.sidebar-brand small { display: block; margin-top: 2px; color: #8493ad; font-size: 12px; letter-spacing: .04em; }
 .desktop-nav { display: grid; gap: 5px; }
 .desktop-nav a { min-height: 44px; padding: 0 13px; display: flex; align-items: center; gap: 12px; border-radius: 10px; color: #aab7cb; text-decoration: none; font-size: 13px; font-weight: 600; transition: background .15s ease, color .15s ease; }
 .desktop-nav a svg { flex: 0 0 auto; }
@@ -10,7 +10,7 @@
 .desktop-nav a.active { background: linear-gradient(135deg, #346df4, #275bd8); color: #fff; box-shadow: 0 5px 16px rgba(37,91,216,.28); }
 .sidebar-session { margin: auto 10px 2px; }
 .sidebar-session strong { display: grid; gap: 3px; font-size: 13px; }
-.sidebar-session strong small { color: #8fa0ba; font-size: 10px; font-weight: 500; }
+.sidebar-session strong small { color: #8fa0ba; font-size: 12px; font-weight: 500; }
 .sidebar-session button, .mobile-logout { width: 100%; margin-top: 14px; padding: 9px 12px; border: 1px solid #33435c; border-radius: 9px; background: transparent; color: #d7e0ee; cursor: pointer; font: 600 12px inherit; }
 .sidebar-session button:hover, .sidebar-session button:focus-visible { background: #223047; border-color: #71829d; color: #fff; }
 .mobile-nav, .mobile-more-backdrop { display: none; }
@@ -26,7 +26,7 @@
   .sidebar { position: static; width: 0; height: 0; padding: 0; border: 0; }
   .sidebar-brand, .desktop-nav, .sidebar-session { display: none; }
   .mobile-nav { position: fixed; z-index: 120; inset: auto 0 0; height: calc(66px + env(safe-area-inset-bottom)); padding: 6px 8px env(safe-area-inset-bottom); display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); background: rgba(255,255,255,.96); border-top: 1px solid var(--border); box-shadow: 0 -8px 28px rgba(15,23,42,.08); backdrop-filter: blur(14px); }
-  .mobile-nav a, .mobile-nav button { min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; padding: 0 2px; border: 0; border-radius: 9px; background: transparent; color: #68758a; text-decoration: none; font-family: inherit; font-size: 10px; font-weight: 600; line-height: 1.15; }
+  .mobile-nav a, .mobile-nav button { min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; padding: 0 2px; border: 0; border-radius: 9px; background: transparent; color: #68758a; text-decoration: none; font-family: inherit; font-size: 12px; font-weight: 600; line-height: 1.15; }
   .mobile-nav a span, .mobile-nav button span { max-width: 100%; white-space: nowrap; }
   .mobile-nav a.active, .mobile-nav button.active { color: var(--primary); background: var(--primary-soft); }
   .mobile-more-backdrop { position: fixed; z-index: 130; inset: 0; display: flex; align-items: flex-end; background: rgba(15,23,42,.42); }
@@ -42,9 +42,9 @@
 }
 
 @media (max-width: 350px) {
-  .mobile-nav a, .mobile-nav button { font-size: 9px; letter-spacing: -.01em; }
+  .mobile-nav a, .mobile-nav button { font-size: 12px; letter-spacing: -.01em; }
 }
 
 .app-modal.mobile-more-menu { position: fixed; top: auto; bottom: 0; margin: 0; width: 100%; max-width: none; max-height: 90dvh; color: var(--text); border-radius: 20px 20px 0 0; }
 .mobile-more-heading button { min-width: 44px; min-height: 44px; }
-@media (max-width: 700px) { .mobile-nav a, .mobile-nav button { font-size: 11px; } .mobile-nav a span, .mobile-nav button span { white-space: normal; text-align: center; } }
+@media (max-width: 700px) { .mobile-nav a, .mobile-nav button { font-size: 12px; } .mobile-nav a span, .mobile-nav button span { white-space: normal; text-align: center; } }

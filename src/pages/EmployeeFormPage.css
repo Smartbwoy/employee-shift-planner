@@ -7,3 +7,11 @@
 .employee-form .employee-active input { width: auto; }
 .employee-form-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; }
 @media (max-width: 700px) { .employee-form-grid { grid-template-columns: 1fr; } }
+
+.employee-form fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
+.employee-form legend { font-size: 18px; font-weight: 700; padding-bottom: 20px; }
+.form-stepper { display: flex; flex-wrap: wrap; list-style: none; padding: 0; gap: 16px; margin: 0 0 24px; color: var(--text-secondary); }
+.form-stepper [aria-current="step"] { color: var(--primary); font-weight: 700; }
+.employee-form dl { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; }
+.employee-form dt { text-transform: capitalize; color: var(--text-secondary); }
+.employee-form dd { margin: 4px 0 0; overflow-wrap: anywhere; }

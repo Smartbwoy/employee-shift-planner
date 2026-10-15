@@ -1,3 +1,4 @@
+import useUnsavedChanges from "../lib/useUnsavedChanges";
 import { useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Modal from "../components/ui/Modal";
@@ -33,6 +34,7 @@ export default function CreateShiftPage() {
   const [draft, setDraft] = useState(initial);
   const [reviewOpen, setReviewOpen] = useState(false);
   const [employeeId, setEmployeeId] = useState("");
+  const markSaved = useUnsavedChanges(JSON.stringify(draft) !== JSON.stringify(initial) || Boolean(employeeId));
   const candidates = useShiftCandidates({ start: draft.startTime, end: draft.endTime, role: draft.role, requiredSkill: draft.requiredSkill, breakMinutes: draft.breakMinutes });
   const create = useCreateShift();
   const shiftDate = draft.startTime?.slice(0, 10);
@@ -48,7 +50,7 @@ export default function CreateShiftPage() {
   const applyTemplate = (template) => { setDraft((current) => ({ ...current, ...template })); setEmployeeId(""); };
   const submit = () => {
     if (!canSubmit) return;
-    create.mutate({ ...draft, isPublished: false, employeeId, breakMinutes: Number(draft.breakMinutes), status: true, assignedColor: null }, { onSuccess: backToSchedule });
+    create.mutate({ ...draft, isPublished: false, employeeId, breakMinutes: Number(draft.breakMinutes), status: true, assignedColor: null }, { onSuccess: () => { markSaved(); backToSchedule(); } });
   };
   const conflict = candidates.data?.find((candidate) => candidate.status !== "Available");
 

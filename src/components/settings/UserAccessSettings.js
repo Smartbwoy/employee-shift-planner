@@ -1,3 +1,4 @@
+import { useConfirm } from "../ui/ConfirmProvider";
 import { useState } from "react";
 import { useCreateUser, useUpdateUserAccess, useUsers } from "../../api/users";
 import { useEmployees } from "../../api/employees";
@@ -10,6 +11,7 @@ const ROLES = ["Employee", "Supervisor", "Administrator"];
 const EMPTY = { email: "", password: "", role: "Employee", employeeId: "" };
 
 export default function UserAccessSettings() {
+  const confirm = useConfirm();
   const users = useUsers();
   const employees = useEmployees();
   const create = useCreateUser();
@@ -47,8 +49,8 @@ export default function UserAccessSettings() {
     onSuccess: () => setMessage("User access updated. Changes apply to the user's next API request."),
   });
 
-  const toggleAccess = (user) => {
-    if (user.isActive && !window.confirm(`Deactivate ${user.email}? They will no longer be able to sign in.`)) return;
+  const toggleAccess = async (user) => {
+    if (user.isActive && !(await confirm(`Deactivate ${user.email}? They will no longer be able to sign in.`, "Deactivate user"))) return;
     setAccess(user, { isActive: !user.isActive });
   };
 

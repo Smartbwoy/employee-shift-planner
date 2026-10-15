@@ -29,9 +29,10 @@ test("planner routes require an authenticated API session", () => {
   expect(screen.getByRole("heading", { name: "Welcome back" })).toBeInTheDocument();
 });
 
-test("unknown routes return to sign in", () => {
+test("unknown routes show a recovery page", () => {
   renderAt("/does-not-exist");
-  expect(screen.getByRole("heading", { name: "Welcome back" })).toBeInTheDocument();
+  expect(screen.getByRole("heading", { name: "Page not found" })).toBeInTheDocument();
+  expect(screen.getByRole("link", { name: "Back to sign in" })).toHaveAttribute("href", "/");
 });
 
 test("requests a password reset without exposing whether the account exists", async () => {
