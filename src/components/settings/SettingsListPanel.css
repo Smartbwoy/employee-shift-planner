@@ -1,0 +1,22 @@
+/* Shared bounds keep growing settings lists usable on small and large screens.
+   Native resizing lets users allocate more space without changing the forms. */
+.settings-list-panel {
+  box-sizing: border-box;
+  align-self: start;
+  min-width: 0;
+  height: clamp(16rem, 60vh, 40rem);
+  height: clamp(16rem, 60dvh, 40rem);
+  min-height: min(16rem, 60vh);
+  min-height: min(16rem, 60dvh);
+  max-height: 85vh;
+  max-height: 85dvh;
+  overflow: auto;
+  resize: vertical;
+  scrollbar-gutter: stable;
+  overflow-wrap: anywhere;
+}
+
+.settings-list-panel:focus-visible {
+  outline: 3px solid var(--blue, #2f67f6);
+  outline-offset: 3px;
+}
