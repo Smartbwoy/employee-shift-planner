@@ -1,3 +1,4 @@
+import "./SettingsListPanel.css";
 import { useState } from "react";
 import { useCreatePosition, usePositions } from "../../api/employees";
 import PositionDeletionDialog from "./PositionDeletionDialog";
@@ -85,7 +86,7 @@ export default function PositionsSettings() {
           </Button>
         </form>
 
-        <section className="card positions-list" aria-labelledby="existing-positions-heading">
+        <section className="card positions-list settings-list-panel" tabIndex={0} aria-labelledby="existing-positions-heading">
           <h3 id="existing-positions-heading">Existing positions</h3>
           {positions.isPending ? <p>Loading positions…</p> : null}
           {positions.isError ? (

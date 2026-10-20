@@ -1,3 +1,4 @@
+import "./SettingsListPanel.css";
 import { useConfirm } from "../ui/ConfirmProvider";
 import { useEffect, useState } from "react";
 import { useCreateHoliday, useDeleteHoliday, useHolidaySettings, useHolidays, useImportHolidays, useSaveHolidaySettings } from "../../api/holidays";
@@ -65,6 +66,6 @@ export default function HolidaySettings() {
         <Button type="submit" disabled={busy}>{create.isPending ? "Adding…" : "Add holiday"}</Button>
       </form>
     </div>
-    <section className="card holiday-list"><h3>{year}–{year + 1} holidays</h3>{holidays.isPending ? <p>Loading holidays…</p> : null}{holidays.isSuccess && !holidays.data.length ? <p>No holidays configured.</p> : null}<ul>{(holidays.data ?? []).map((item) => <li key={item.id}><div><b>{item.date} · {item.name}</b><p>{item.schedulingPolicy} · {item.source}{item.regionCode ? ` · ${item.regionCode}` : ""}</p></div><button type="button" disabled={busy} onClick={async () => { if (await confirm(`Delete ${item.name}?`, "Delete holiday")) remove.mutate(item.id); }}>Delete</button></li>)}</ul></section>
+    <section className="card holiday-list settings-list-panel" tabIndex={0} aria-label="Configured holidays"><h3>{year}–{year + 1} holidays</h3>{holidays.isPending ? <p>Loading holidays…</p> : null}{holidays.isSuccess && !holidays.data.length ? <p>No holidays configured.</p> : null}<ul>{(holidays.data ?? []).map((item) => <li key={item.id}><div><b>{item.date} · {item.name}</b><p>{item.schedulingPolicy} · {item.source}{item.regionCode ? ` · ${item.regionCode}` : ""}</p></div><button type="button" disabled={busy} onClick={async () => { if (await confirm(`Delete ${item.name}?`, "Delete holiday")) remove.mutate(item.id); }}>Delete</button></li>)}</ul></section>
   </section>;
 }

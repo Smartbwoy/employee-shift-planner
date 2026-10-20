@@ -1,3 +1,4 @@
+import "./SettingsListPanel.css";
 import { useConfirm } from "../ui/ConfirmProvider";
 import { useState } from "react";
 import { usePositions } from "../../api/employees";
@@ -69,7 +70,7 @@ export default function StaffingRequirementsSettings() {
           <Button type="submit" disabled={busy || form.startTime === form.endTime}>{create.isPending ? "Adding…" : "Add requirement"}</Button>
         </form>
 
-        <section className="card staffing-list">
+        <section className="card staffing-list settings-list-panel" tabIndex={0} aria-label="Current requirements">
           <h3>Current requirements</h3>
           {requirements.isPending ? <p>Loading requirements…</p> : null}
           {requirements.isSuccess && requirements.data.length === 0 ? <p>No staffing requirements have been configured.</p> : null}

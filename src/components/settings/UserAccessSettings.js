@@ -1,3 +1,4 @@
+import "./SettingsListPanel.css";
 import { useConfirm } from "../ui/ConfirmProvider";
 import { useState } from "react";
 import { useCreateUser, useUpdateUserAccess, useUsers } from "../../api/users";
@@ -103,7 +104,7 @@ export default function UserAccessSettings() {
           <Button type="submit" disabled={create.isPending || !formIsValid}>{create.isPending ? "Creating…" : "Create user"}</Button>
         </form>
 
-        <section className="card user-access-list" aria-labelledby="existing-users-heading">
+        <section className="card user-access-list settings-list-panel" tabIndex={0} aria-labelledby="existing-users-heading">
           <div className="user-access-card-heading">
             <div>
               <h3 id="existing-users-heading">Existing users</h3>
